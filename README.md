@@ -34,11 +34,11 @@ Projeto desenvolvido para estudo e prática de desenvolvimento mobile, focando e
 
 ### Tela principal
 
-![Imagem 1](assets/imagem1.jpeg)
+![Imagem 1](./assets/imagem1.jpg)
 
 ### Mapa com simulação
 
-![Imagem 2](assets/imagem2.jpeg)
+![Imagem 2](./assets/imagem2.jpg)
 
 ## 📦 Como executar o projeto
 
