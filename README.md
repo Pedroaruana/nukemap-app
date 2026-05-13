@@ -30,6 +30,16 @@ Projeto desenvolvido para estudo e prática de desenvolvimento mobile, focando e
 
 ---
 
+## 📸 Screenshots
+
+### Tela principal
+
+![Imagem 1](assets/imagem1.jpeg)
+
+### Mapa com simulação
+
+![Imagem 2](assets/imagem2.jpeg)
+
 ## 📦 Como executar o projeto
 
 ```bash
