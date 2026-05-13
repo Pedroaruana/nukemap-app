@@ -1,50 +1,38 @@
-# Welcome to your Expo app 👋
+# 📱 NUKEMAP APP
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Aplicativo mobile desenvolvido com React Native e Expo que utiliza mapas interativos para simulação de áreas de impacto geográfico em modo satélite.
 
-## Get started
+O projeto exibe um ponto central com múltiplos círculos concêntricos representando diferentes níveis de alcance, aplicando conceitos de geolocalização e visualização de dados em mapas.
 
-1. Install dependencies
+---
 
-   ```bash
-   npm install
-   ```
+## 🚀 Tecnologias utilizadas
 
-2. Start the app
+- React Native
+- Expo
+- react-native-maps
+- JavaScript / TypeScript
 
-   ```bash
-   npx expo start
-   ```
+---
 
-In the output, you'll find options to open the app in a
+## 📍 Funcionalidades
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- Mapa interativo em modo satélite
+- Marcador central de localização
+- Círculos de simulação de impacto com diferentes raios
+- Interface simples com painel informativo
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+---
 
-## Get a fresh project
+## 🎯 Objetivo
 
-When you're ready, run:
+Projeto desenvolvido para estudo e prática de desenvolvimento mobile, focando em mapas interativos, manipulação de coordenadas e renderização de elementos geográficos.
+
+---
+
+## 📦 Como executar o projeto
 
 ```bash
-npm run reset-project
+npm install
+npx expo start
 ```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
