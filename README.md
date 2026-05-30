@@ -29,6 +29,7 @@ Expo Location
 JavaScript / TypeScript
 
 📊 Diferenciais Técnicos
+
 Simulação baseada em dados reais históricos
 Interface inspirada em HUD militar
 Cálculo dinâmico de zonas de dano
