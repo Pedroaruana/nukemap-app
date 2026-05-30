@@ -7,6 +7,7 @@ Aplicativo mobile interativo desenvolvido com React Native e Expo para simulaç�
 Demonstrar habilidades em desenvolvimento mobile, manipulação de mapas geoespaciais, visualização de dados e construção de interfaces interativas com foco em performance e experiência do usuário.
 
 ⚙️ Funcionalidades Principais
+
 Renderização de mapas em tempo real com react-native-maps
 Simulação dinâmica de zonas de impacto baseada em potência (KT/MT)
 Cálculo proporcional de raio de destruição utilizando escala logarítmica
@@ -15,12 +16,14 @@ Geolocalização com busca de cidades
 Dashboard com estatísticas estimadas de impacto populacional
 
 🏗️ Arquitetura
+
 Componentização modular (Map, HUD, Controls, Simulation Engine)
 Gerenciamento de estado com hooks
 Separação entre lógica de cálculo e UI
 Código escalável para inclusão de novos cenários
 
 🚀 Tecnologias
+
 react-native-maps
 Expo Location
 JavaScript / TypeScript
