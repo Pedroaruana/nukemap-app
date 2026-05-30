@@ -1,10 +1,24 @@
-# 📱 NUKEMAP APP
+☢️ NUKEMAP APP
 
-Aplicativo mobile desenvolvido com React Native e Expo que utiliza mapas interativos para simulação de áreas de impacto geográfico em modo satélite.
+Simulador de impacto nuclear interativo desenvolvido com React Native + Expo.
+Visualize zonas de destruição de armas nucleares reais sobre qualquer cidade do mundo, em modo satélite.
 
-O projeto exibe um ponto central com múltiplos círculos concêntricos representando diferentes níveis de alcance, aplicando conceitos de geolocalização e visualização de dados em mapas.
+🗺️ Visão Geral
+O NUKEMAP App combina geolocalização, mapas interativos e dados históricos reais para simular o impacto de diferentes armas nucleares sobre cidades do mundo. O usuário escolhe o alvo, seleciona o arsenal e visualiza as zonas de dano em tempo real sobre o mapa satélite.
 
----
+⚙️ Funcionalidades
+
+🛰️ Mapa interativo em modo satélite com estilo dark
+☢️ 7 armas nucleares reais — do Davy Crockett (0.02 KT) à Tsar Bomba (50 MT)
+🎯 5 zonas de dano com raios proporcionais à potência real da arma
+💥 Animação de detonação — flash branco, shake do mapa e expansão das ondas
+🏙️ 9 cidades pré-configuradas com população real (São Paulo, Tóquio, Nova York...)
+📊 Estatísticas de impacto — mortes, feridos críticos, feridos leves e população total
+🔍 Busca de cidade por nome
+🎖️ HUD estilo militar com indicador de potência e status
+
+🔴 Zonas de Dano Simuladas
+ZonaDescrição⚪ Bola de fogoVaporização total — nada sobrevive🔴 Destruição totalColapso de estruturas, mortalidade ~100%🟠 Dano moderadoEdifícios destruídos, mortalidade alta🟡 Dano leveJanelas quebradas, ferimentos graves🟤 Queimaduras térmicasQueimaduras de 3º grau a céu aberto
 
 ## 🚀 Tecnologias utilizadas
 
@@ -12,35 +26,26 @@ O projeto exibe um ponto central com múltiplos círculos concêntricos represen
 - Expo
 - react-native-maps
 - JavaScript / TypeScript
-
----
-
-## 📍 Funcionalidades
-
-- Mapa interativo em modo satélite
-- Marcador central de localização
-- Círculos de simulação de impacto com diferentes raios
-- Interface simples com painel informativo
-
----
-
-## 🎯 Objetivo
-
-Projeto desenvolvido para estudo e prática de desenvolvimento mobile, focando em mapas interativos, manipulação de coordenadas e renderização de elementos geográficos.
-
----
+- Expo Location
+- Expo Vector Icons
 
 ## 📸 Screenshots
 
 ### Tela principal
 
-![Imagem 1](assets/images/imagem1.jpg)
+![Imagem 1](assets/images/screen1.jpg)
 
-![Imagem 2](assets/images/imagem2.jpg)
+![Imagem 2](assets/images/screen2.jpg)
 
-## 📦 Como executar o projeto
-
-```bash
+🚀 Como executar
+bash# 1. Instalar dependências
 npm install
+
+# 2. Iniciar o projeto
+
 npx expo start
-```
+Depois escaneie o QR Code com o app Expo Go (Android / iOS).
+
+⚠️ Aviso
+Este aplicativo é estritamente educacional e de entretenimento.
+Nenhuma informação aqui representa capacidade operacional real de qualquer nação.
