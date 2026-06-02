@@ -10,22 +10,8 @@
 ![Autor](https://img.shields.io/badge/Autor-Pedro_Aruana-ff3b30?style=for-the-badge&logo=github&logoColor=white)
 
 > 🌐 **[Acesse a demo online →](https://nukemap-app.vercel.app)** _(versão web com Leaflet/OpenStreetMap)_
-
----
-
-## 🧭 Duas versões, um código
-
-O projeto roda em **duas plataformas** a partir do mesmo código, usando arquivos específicos por plataforma (`*.web.tsx`) que o Metro/Expo resolve automaticamente:
-
-| | 📱 Mobile (Android / iOS) | 🌐 Web |
-|---|---|---|
-| **Mapa** | `react-native-maps` (Google Maps satélite) | `react-leaflet` (CartoCDN dark / OpenStreetMap) |
-| **Áudio** | `expo-audio` (sirene + boom + rumble) | `expo-audio` (HTMLAudioElement) |
-| **Haptics** | `expo-haptics` (vibração real) | no-op (browser não suporta) |
-| **GPS** | `expo-location` (sensor nativo) | `expo-location` (Geolocation API) |
-| **Deploy** | Expo Go / EAS Build | Vercel ([nukemap-app.vercel.app](https://nukemap-app.vercel.app)) |
-
-Toda a lógica de simulação física, modelos 3D de bombas, slider de altitude, comparações e timeline é **compartilhada** — apenas o componente de mapa muda entre as plataformas (`components/NukeMap.tsx` para mobile, `components/NukeMap.web.tsx` para web).
+>
+> O projeto roda em **mobile e web** a partir do mesmo código: a versão nativa usa `react-native-maps` (Google Maps), e a versão web usa `react-leaflet` (OpenStreetMap). Toda a lógica de simulação é compartilhada — só o componente de mapa muda entre as plataformas.
 
 Aplicativo mobile interativo desenvolvido com **React Native + Expo** para simulação realista de impacto nuclear em escala urbana. Utiliza modelos científicos do **Glasstone-Dolan** (manual oficial americano de efeitos de armas nucleares) e dados de Hiroshima/Nagasaki para calcular zonas de dano, vítimas e fallout radioativo com precisão calibrada contra o **NUKEMAP** original de Alex Wellerstein.
 
