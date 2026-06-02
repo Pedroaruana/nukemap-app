@@ -1,5 +1,13 @@
 # ☢️ NUKEMAP APP
 
+![React Native](https://img.shields.io/badge/React_Native-0.81-61DAFB?style=for-the-badge&logo=react&logoColor=white)
+![Expo](https://img.shields.io/badge/Expo-SDK_54-000020?style=for-the-badge&logo=expo&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Google Maps](https://img.shields.io/badge/Maps-Google-4285F4?style=for-the-badge&logo=googlemaps&logoColor=white)
+![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
+![iOS](https://img.shields.io/badge/iOS-000000?style=for-the-badge&logo=apple&logoColor=white)
+![Autor](https://img.shields.io/badge/Autor-Pedro_Aruana-ff3b30?style=for-the-badge&logo=github&logoColor=white)
+
 Aplicativo mobile interativo desenvolvido com **React Native + Expo** para simulação realista de impacto nuclear em escala urbana. Utiliza modelos científicos do **Glasstone-Dolan** (manual oficial americano de efeitos de armas nucleares) e dados de Hiroshima/Nagasaki para calcular zonas de dano, vítimas e fallout radioativo com precisão calibrada contra o **NUKEMAP** original de Alex Wellerstein.
 
 ---
@@ -89,16 +97,6 @@ Os números absolutos não dizem muito pra leigos. O app traduz para escalas fam
 ### 📦 Painel Minimizável
 
 Após a detonação, um handle no topo do painel permite minimizar todos os dados pra ver o mapa inteiro, e reabrir com um toque.
-
----
-
-## 🏗️ Arquitetura
-
-- Componentização modular: `Map`, `HUD`, `Controls`, `Bomb3D`, `Simulation Engine`
-- Gerenciamento de estado com hooks (`useState`, `useRef`, `useMemo`, `useEffect`)
-- Separação clara entre lógica de cálculo físico e camada de UI
-- Tipagem estrita com TypeScript em modo `strict`
-- Animações nativas com `Animated` + `useNativeDriver: true`
 
 ---
 
