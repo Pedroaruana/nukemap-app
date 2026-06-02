@@ -14,7 +14,9 @@
       "package": "com.pedroaruana.nukemapapp",
       "permissions": [
         "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION"
+        "ACCESS_COARSE_LOCATION",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
       ],
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
@@ -52,8 +54,9 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "a34f0906-6b59-413d-bae2-a8844715a369"
+        "projectId": "d2dd08a3-c917-4ba0-be59-e1060d335288"
       }
-    }
+    },
+    "owner": "pedroaruana"
   }
 }
