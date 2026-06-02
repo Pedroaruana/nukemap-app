@@ -840,9 +840,6 @@ export default function HomeScreen() {
                 const spin = weaponSpin.interpolate({
                   inputRange: [0, 1], outputRange: ["0deg", "360deg"],
                 });
-                const tilt = weaponTilt.interpolate({
-                  inputRange: [0, 1], outputRange: ["-15deg", "15deg"],
-                });
                 return (
                   <Pressable
                     key={w.id}

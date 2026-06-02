@@ -20,7 +20,7 @@ export interface NukeMapProps {
   detonated: boolean;
   craterRadius: number;
   showFallout: boolean;
-  falloutPoly: Array<{ latitude: number; longitude: number }>;
+  falloutPoly: { latitude: number; longitude: number }[];
 }
 
 // Converte deltaDeg (graus de latitude) num zoom level aproximado do Leaflet

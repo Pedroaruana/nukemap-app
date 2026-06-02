@@ -28,7 +28,7 @@ export interface NukeMapProps {
   detonated: boolean;
   craterRadius: number;
   showFallout: boolean;
-  falloutPoly: Array<{ latitude: number; longitude: number }>;
+  falloutPoly: { latitude: number; longitude: number }[];
 }
 
 const NukeMap = forwardRef<NukeMapRef, NukeMapProps>((props, ref) => {
