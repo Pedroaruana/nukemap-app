@@ -152,8 +152,6 @@ O propósito é ilustrar a escala absurda das armas nucleares de forma que núme
 
 Projeto desenvolvido por **Pedro Aruana** como demonstração de habilidades em desenvolvimento mobile, modelagem física e design de UI/UX.
 
-> Todo o código, modelagem matemática, design de interface e arquitetura deste aplicativo foram desenvolvidos por mim.
-
 ---
 
 <p align="center">
