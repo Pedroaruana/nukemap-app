@@ -11,6 +11,22 @@
 
 > 🌐 **[Acesse a demo online →](https://nukemap-app.vercel.app)** _(versão web com Leaflet/OpenStreetMap)_
 
+---
+
+## 🧭 Duas versões, um código
+
+O projeto roda em **duas plataformas** a partir do mesmo código, usando arquivos específicos por plataforma (`*.web.tsx`) que o Metro/Expo resolve automaticamente:
+
+| | 📱 Mobile (Android / iOS) | 🌐 Web |
+|---|---|---|
+| **Mapa** | `react-native-maps` (Google Maps satélite) | `react-leaflet` (CartoCDN dark / OpenStreetMap) |
+| **Áudio** | `expo-audio` (sirene + boom + rumble) | `expo-audio` (HTMLAudioElement) |
+| **Haptics** | `expo-haptics` (vibração real) | no-op (browser não suporta) |
+| **GPS** | `expo-location` (sensor nativo) | `expo-location` (Geolocation API) |
+| **Deploy** | Expo Go / EAS Build | Vercel ([nukemap-app.vercel.app](https://nukemap-app.vercel.app)) |
+
+Toda a lógica de simulação física, modelos 3D de bombas, slider de altitude, comparações e timeline é **compartilhada** — apenas o componente de mapa muda entre as plataformas (`components/NukeMap.tsx` para mobile, `components/NukeMap.web.tsx` para web).
+
 Aplicativo mobile interativo desenvolvido com **React Native + Expo** para simulação realista de impacto nuclear em escala urbana. Utiliza modelos científicos do **Glasstone-Dolan** (manual oficial americano de efeitos de armas nucleares) e dados de Hiroshima/Nagasaki para calcular zonas de dano, vítimas e fallout radioativo com precisão calibrada contra o **NUKEMAP** original de Alex Wellerstein.
 
 ---
@@ -125,17 +141,40 @@ Após a detonação, um handle no topo do painel permite minimizar todos os dado
 
 ---
 
-## 🚀 Como executar
+## 🚀 Como executar localmente
+
+### Instalação
 
 ```bash
-# 1. Instalar dependências
+git clone https://github.com/Pedroaruana/nukemap-app.git
+cd nukemap-app
 npm install
+```
 
-# 2. Iniciar o projeto
+### 📱 Versão mobile (Expo Go)
+
+```bash
 npx expo start
 ```
 
-Escaneie o QR Code com o app **Expo Go** (Android / iOS).
+Escaneie o QR Code com o app **Expo Go** ([Android](https://play.google.com/store/apps/details?id=host.exp.exponent) / [iOS](https://apps.apple.com/app/expo-go/id982107779)). Experiência completa: Google Maps satélite, áudio, haptics, GPS.
+
+### 🌐 Versão web (navegador)
+
+```bash
+npx expo start --web
+```
+
+Abre em `http://localhost:8081`. Usa Leaflet com tiles do OpenStreetMap (sem chave de API). Algumas features nativas (haptics) não funcionam no navegador.
+
+### 🚢 Build web para deploy
+
+```bash
+npx expo export --platform web
+# gera a pasta dist/ pronta para deploy em Vercel/Netlify
+```
+
+O arquivo `vercel.json` já está configurado — basta importar o repositório na Vercel e o deploy é automático.
 
 ---
 
