@@ -17,277 +17,13 @@ import {
   TextInput,
   View,
 } from "react-native";
+import Bomb3D from "../../components/Bomb3D";
 import NukeMap, { NukeMapRef } from "../../components/NukeMap";
+import { CITIES, DEFAULT_DENSITY } from "../../data/cities";
+import { WEAPONS } from "../../data/weapons";
 
-const { width, height } = Dimensions.get("window");
+const { height } = Dimensions.get("window");
 
-// ── CIDADES (50+) ────────────────────────────────────────────────────────────
-type City = {
-  latitude: number; longitude: number; population: number; country: string;
-  density: number; // pessoas/km² no centro urbano (para cálculo de baixas)
-};
-const CITIES: Record<string, City> = {
-  "São Paulo":       { latitude: -23.5505, longitude: -46.6333, population: 22000000, country: "BR", density: 7400 },
-  "Rio de Janeiro":  { latitude: -22.9068, longitude: -43.1729, population: 13000000, country: "BR", density: 5400 },
-  "Brasília":        { latitude: -15.7939, longitude: -47.8828, population: 4600000,  country: "BR", density: 480 },
-  "Salvador":        { latitude: -12.9777, longitude: -38.5016, population: 3900000,  country: "BR", density: 3800 },
-  "Belo Horizonte":  { latitude: -19.9167, longitude: -43.9345, population: 6000000,  country: "BR", density: 7200 },
-  "Manaus":          { latitude:  -3.1190, longitude: -60.0217, population: 2200000,  country: "BR", density: 158 },
-  "Curitiba":        { latitude: -25.4284, longitude: -49.2733, population: 1960000,  country: "BR", density: 4000 },
-  "Porto Alegre":    { latitude: -30.0346, longitude: -51.2177, population: 1490000,  country: "BR", density: 2800 },
-  "Recife":          { latitude:  -8.0476, longitude: -34.8770, population: 4100000,  country: "BR", density: 7000 },
-  "Fortaleza":       { latitude:  -3.7172, longitude: -38.5433, population: 4100000,  country: "BR", density: 8000 },
-
-  "Nova York":       { latitude:  40.7128, longitude: -74.0060, population: 19000000, country: "US", density: 11000 },
-  "Los Angeles":     { latitude:  34.0522, longitude: -118.2437,population: 13000000, country: "US", density: 3200 },
-  "Chicago":         { latitude:  41.8781, longitude: -87.6298, population: 9500000,  country: "US", density: 4600 },
-  "Washington DC":   { latitude:  38.9072, longitude: -77.0369, population: 6300000,  country: "US", density: 4300 },
-  "Miami":           { latitude:  25.7617, longitude: -80.1918, population: 6200000,  country: "US", density: 5000 },
-  "São Francisco":   { latitude:  37.7749, longitude: -122.4194,population: 4700000,  country: "US", density: 7200 },
-  "Las Vegas":       { latitude:  36.1699, longitude: -115.1398,population: 2300000,  country: "US", density: 1800 },
-  "Houston":         { latitude:  29.7604, longitude: -95.3698, population: 7100000,  country: "US", density: 1400 },
-
-  "Cidade do México":{ latitude:  19.4326, longitude: -99.1332, population: 22000000, country: "MX", density: 6000 },
-  "Buenos Aires":    { latitude: -34.6037, longitude: -58.3816, population: 15000000, country: "AR", density: 14400 },
-  "Lima":            { latitude: -12.0464, longitude: -77.0428, population: 10700000, country: "PE", density: 3300 },
-  "Bogotá":          { latitude:   4.7110, longitude: -74.0721, population: 10900000, country: "CO", density: 4300 },
-  "Santiago":        { latitude: -33.4489, longitude: -70.6693, population: 6800000,  country: "CL", density: 8500 },
-
-  "Londres":         { latitude:  51.5074, longitude:  -0.1278, population: 9000000,  country: "GB", density: 5700 },
-  "Paris":           { latitude:  48.8566, longitude:   2.3522, population: 11000000, country: "FR", density: 21000 },
-  "Berlim":          { latitude:  52.5200, longitude:  13.4050, population: 3700000,  country: "DE", density: 4100 },
-  "Madrid":          { latitude:  40.4168, longitude:  -3.7038, population: 6700000,  country: "ES", density: 5400 },
-  "Roma":            { latitude:  41.9028, longitude:  12.4964, population: 4300000,  country: "IT", density: 2200 },
-  "Lisboa":          { latitude:  38.7223, longitude:  -9.1393, population: 2900000,  country: "PT", density: 5200 },
-  "Amsterdã":        { latitude:  52.3676, longitude:   4.9041, population: 1170000,  country: "NL", density: 5200 },
-  "Atenas":          { latitude:  37.9838, longitude:  23.7275, population: 3150000,  country: "GR", density: 7500 },
-  "Estocolmo":       { latitude:  59.3293, longitude:  18.0686, population: 1650000,  country: "SE", density: 5200 },
-  "Viena":           { latitude:  48.2082, longitude:  16.3738, population: 1950000,  country: "AT", density: 4700 },
-  "Kiev":            { latitude:  50.4501, longitude:  30.5234, population: 2960000,  country: "UA", density: 3300 },
-
-  "Moscou":          { latitude:  55.7558, longitude:  37.6173, population: 13000000, country: "RU", density: 5000 },
-  "São Petersburgo": { latitude:  59.9311, longitude:  30.3609, population: 5400000,  country: "RU", density: 3800 },
-  "Istanbul":        { latitude:  41.0082, longitude:  28.9784, population: 15500000, country: "TR", density: 2900 },
-  "Cairo":           { latitude:  30.0444, longitude:  31.2357, population: 21000000, country: "EG", density: 19000 },
-  "Tel Aviv":        { latitude:  32.0853, longitude:  34.7818, population: 4500000,  country: "IL", density: 8300 },
-  "Teerã":           { latitude:  35.6892, longitude:  51.3890, population: 9500000,  country: "IR", density: 11800 },
-  "Riade":           { latitude:  24.7136, longitude:  46.6753, population: 7700000,  country: "SA", density: 4500 },
-  "Dubai":           { latitude:  25.2048, longitude:  55.2708, population: 3500000,  country: "AE", density: 3400 },
-
-  "Tóquio":          { latitude:  35.6762, longitude: 139.6503, population: 37000000, country: "JP", density: 6200 },
-  "Osaka":           { latitude:  34.6937, longitude: 135.5023, population: 19000000, country: "JP", density: 11800 },
-  "Pequim":          { latitude:  39.9042, longitude: 116.4074, population: 21000000, country: "CN", density: 1300 },
-  "Xangai":          { latitude:  31.2304, longitude: 121.4737, population: 28000000, country: "CN", density: 3800 },
-  "Hong Kong":       { latitude:  22.3193, longitude: 114.1694, population: 7500000,  country: "HK", density: 6800 },
-  "Seul":            { latitude:  37.5665, longitude: 126.9780, population: 9700000,  country: "KR", density: 16000 },
-  "Pyongyang":       { latitude:  39.0392, longitude: 125.7625, population: 3100000,  country: "KP", density: 5400 },
-  "Taipé":           { latitude:  25.0330, longitude: 121.5654, population: 2700000,  country: "TW", density: 9800 },
-  "Bangkok":         { latitude:  13.7563, longitude: 100.5018, population: 10500000, country: "TH", density: 5300 },
-  "Singapura":       { latitude:   1.3521, longitude: 103.8198, population: 5900000,  country: "SG", density: 8400 },
-  "Mumbai":          { latitude:  19.0760, longitude:  72.8777, population: 20400000, country: "IN", density: 21000 },
-  "Nova Delhi":      { latitude:  28.6139, longitude:  77.2090, population: 32000000, country: "IN", density: 11300 },
-  "Karachi":         { latitude:  24.8607, longitude:  67.0011, population: 16000000, country: "PK", density: 24000 },
-  "Jacarta":         { latitude:  -6.2088, longitude: 106.8456, population: 10800000, country: "ID", density: 15300 },
-
-  "Sydney":          { latitude: -33.8688, longitude: 151.2093, population: 5300000,  country: "AU", density: 2100 },
-  "Joanesburgo":     { latitude: -26.2041, longitude:  28.0473, population: 5900000,  country: "ZA", density: 2900 },
-  "Lagos":           { latitude:   6.5244, longitude:   3.3792, population: 15400000, country: "NG", density: 13700 },
-};
-
-// Densidade padrão para alvos personalizados / GPS
-const DEFAULT_DENSITY = 3000;
-
-// ── ARSENAL (15+) ─────────────────────────────────────────────────────────────
-type BombShape = "gravity" | "sphere" | "mirv" | "tsar";
-type Weapon = {
-  id: string; name: string; kt: number; color: string;
-  desc: string; year: string; country: string; shape: BombShape;
-};
-const WEAPONS: Weapon[] = [
-  { id: "davy",      name: "Davy Crockett", kt: 0.02,  color: "#a8ff78", desc: "Menor arma nuclear já criada",       year: "1961", country: "🇺🇸", shape: "sphere" },
-  { id: "sadm",      name: "W54 SADM",      kt: 1,     color: "#78ffd6", desc: "Mochila nuclear portátil",            year: "1964", country: "🇺🇸", shape: "sphere" },
-  { id: "artillery", name: "W48 155mm",     kt: 0.072, color: "#bbff66", desc: "Projétil de artilharia nuclear",      year: "1963", country: "🇺🇸", shape: "gravity" },
-  { id: "tactical",  name: "B57 Tática",    kt: 5,     color: "#9effa0", desc: "Bomba tática anti-submarino",         year: "1963", country: "🇺🇸", shape: "gravity" },
-  { id: "hiroshima", name: "Little Boy",    kt: 15,    color: "#ffd200", desc: "Hiroshima — 6 ago 1945",              year: "1945", country: "🇺🇸", shape: "gravity" },
-  { id: "nagasaki",  name: "Fat Man",       kt: 21,    color: "#ff9500", desc: "Nagasaki — 9 ago 1945",               year: "1945", country: "🇺🇸", shape: "sphere" },
-  { id: "trinity",   name: "Trinity Gadget",kt: 22,    color: "#ffb700", desc: "Primeiro teste nuclear da história",  year: "1945", country: "🇺🇸", shape: "sphere" },
-  { id: "rds1",      name: "RDS-1 (Joe-1)", kt: 22,    color: "#ff8855", desc: "Primeira bomba soviética",            year: "1949", country: "🇷🇺", shape: "sphere" },
-  { id: "w76",       name: "W76 SLBM",      kt: 100,   color: "#ff7733", desc: "Ogiva submarina padrão americana",    year: "1978", country: "🇺🇸", shape: "mirv" },
-  { id: "b61",       name: "B61-12",        kt: 340,   color: "#ff6b35", desc: "Bomba gravitacional OTAN moderna",    year: "2020", country: "🇺🇸", shape: "gravity" },
-  { id: "trident",   name: "Trident II D5", kt: 475,   color: "#ff5522", desc: "SLBM submarina — padrão atual",       year: "1990", country: "🇺🇸", shape: "mirv" },
-  { id: "topol",     name: "RS-24 Yars",    kt: 800,   color: "#ff3b30", desc: "ICBM russo MIRV moderno",             year: "2010", country: "🇷🇺", shape: "mirv" },
-  { id: "w88",       name: "W88",           kt: 475,   color: "#ff4444", desc: "Ogiva mais avançada dos EUA",         year: "1989", country: "🇺🇸", shape: "mirv" },
-  { id: "df41",      name: "DF-41",         kt: 1000,  color: "#ff2266", desc: "ICBM chinês de longo alcance",        year: "2017", country: "🇨🇳", shape: "mirv" },
-  { id: "b83",       name: "B83",           kt: 1200,  color: "#ff1144", desc: "Maior bomba ativa dos EUA",           year: "1983", country: "🇺🇸", shape: "gravity" },
-  { id: "satan",     name: "R-36 Satan",    kt: 20000, color: "#ff0066", desc: "ICBM soviético — 10 ogivas MIRV",     year: "1974", country: "🇷🇺", shape: "mirv" },
-  { id: "tsar",      name: "Tsar Bomba",    kt: 50000, color: "#ff0080", desc: "Maior explosão da história — URSS",   year: "1961", country: "🇷🇺", shape: "tsar" },
-];
-
-// ── COMPONENTE: BOMBA 3D ─────────────────────────────────────────────────────
-function Bomb3D({ shape, color }: { shape: BombShape; color: string }) {
-  if (shape === "gravity") {
-    // Bomba de gravidade tipo B83/Little Boy — cilindro alongado com nose cone e aletas
-    return (
-      <View style={{ alignItems: "center" }}>
-        {/* nose cone */}
-        <View style={{
-          width: 0, height: 0,
-          borderLeftWidth: 7, borderRightWidth: 7, borderBottomWidth: 10,
-          borderLeftColor: "transparent", borderRightColor: "transparent",
-          borderBottomColor: color,
-        }} />
-        {/* corpo */}
-        <View style={{
-          width: 14, height: 36,
-          backgroundColor: color,
-          shadowColor: color, shadowOpacity: 0.9, shadowRadius: 8,
-        }}>
-          <View style={{ position: "absolute", top: 6, left: 0, right: 0, height: 1.5, backgroundColor: "rgba(0,0,0,0.4)" }} />
-          <View style={{ position: "absolute", top: 14, left: 0, right: 0, height: 1.5, backgroundColor: "rgba(0,0,0,0.4)" }} />
-          <View style={{ position: "absolute", top: 22, left: 0, right: 0, height: 1.5, backgroundColor: "rgba(0,0,0,0.4)" }} />
-        </View>
-        {/* aletas em X */}
-        <View style={{ flexDirection: "row", justifyContent: "center", marginTop: -3 }}>
-          <View style={{
-            width: 0, height: 0,
-            borderBottomWidth: 12, borderRightWidth: 10,
-            borderBottomColor: "transparent", borderRightColor: color,
-          }} />
-          <View style={{
-            width: 0, height: 0,
-            borderBottomWidth: 12, borderLeftWidth: 10,
-            borderBottomColor: "transparent", borderLeftColor: color,
-          }} />
-        </View>
-      </View>
-    );
-  }
-
-  if (shape === "sphere") {
-    // Fat Man — esfera com aletas
-    return (
-      <View style={{ alignItems: "center" }}>
-        <View style={{
-          width: 38, height: 38, borderRadius: 19,
-          backgroundColor: color,
-          shadowColor: color, shadowOpacity: 1, shadowRadius: 12,
-        }}>
-          {/* highlight pra dar profundidade */}
-          <View style={{
-            position: "absolute", top: 4, left: 6,
-            width: 14, height: 10, borderRadius: 7,
-            backgroundColor: "rgba(255,255,255,0.35)",
-          }} />
-          {/* rebites/parafusos */}
-          <View style={{ position: "absolute", top: 12, right: 4, width: 3, height: 3, borderRadius: 1.5, backgroundColor: "rgba(0,0,0,0.4)" }} />
-          <View style={{ position: "absolute", bottom: 12, left: 6, width: 3, height: 3, borderRadius: 1.5, backgroundColor: "rgba(0,0,0,0.4)" }} />
-        </View>
-        {/* aletas atrás */}
-        <View style={{ flexDirection: "row", marginTop: -4 }}>
-          <View style={{
-            width: 0, height: 0,
-            borderBottomWidth: 8, borderRightWidth: 6,
-            borderBottomColor: "transparent", borderRightColor: color,
-          }} />
-          <View style={{ width: 4 }} />
-          <View style={{
-            width: 0, height: 0,
-            borderBottomWidth: 8, borderLeftWidth: 6,
-            borderBottomColor: "transparent", borderLeftColor: color,
-          }} />
-        </View>
-      </View>
-    );
-  }
-
-  if (shape === "tsar") {
-    // Tsar Bomba — gigante prata com nose arredondado
-    return (
-      <View style={{ alignItems: "center" }}>
-        {/* nose arredondado */}
-        <View style={{
-          width: 18, height: 14,
-          borderTopLeftRadius: 9, borderTopRightRadius: 9,
-          backgroundColor: color,
-        }} />
-        {/* corpo gordo */}
-        <View style={{
-          width: 22, height: 32,
-          backgroundColor: color,
-          shadowColor: color, shadowOpacity: 1, shadowRadius: 14,
-        }}>
-          <View style={{ position: "absolute", top: 5, left: 0, right: 0, height: 2, backgroundColor: "rgba(0,0,0,0.4)" }} />
-          <View style={{ position: "absolute", top: 14, left: 0, right: 0, height: 2, backgroundColor: "rgba(0,0,0,0.4)" }} />
-          <View style={{ position: "absolute", top: 23, left: 0, right: 0, height: 2, backgroundColor: "rgba(0,0,0,0.4)" }} />
-          {/* highlight */}
-          <View style={{ position: "absolute", top: 3, left: 2, width: 4, height: 24, backgroundColor: "rgba(255,255,255,0.25)" }} />
-        </View>
-        {/* aletas largas */}
-        <View style={{ flexDirection: "row", justifyContent: "center", marginTop: -3 }}>
-          <View style={{
-            width: 0, height: 0,
-            borderBottomWidth: 11, borderRightWidth: 12,
-            borderBottomColor: "transparent", borderRightColor: color,
-          }} />
-          <View style={{
-            width: 0, height: 0,
-            borderBottomWidth: 11, borderLeftWidth: 12,
-            borderBottomColor: "transparent", borderLeftColor: color,
-          }} />
-        </View>
-      </View>
-    );
-  }
-
-  // MIRV — cluster de cones reentry vehicles
-  return (
-    <View style={{ alignItems: "center" }}>
-      <View style={{ flexDirection: "row", alignItems: "flex-end", gap: 1 }}>
-        {/* cone esquerdo (atrás) */}
-        <View style={{
-          width: 0, height: 0,
-          borderLeftWidth: 5, borderRightWidth: 5, borderBottomWidth: 22,
-          borderLeftColor: "transparent", borderRightColor: "transparent",
-          borderBottomColor: color, opacity: 0.55,
-          transform: [{ scaleY: 0.85 }],
-        }} />
-        {/* cone central (maior, frente) */}
-        <View style={{
-          width: 0, height: 0,
-          borderLeftWidth: 8, borderRightWidth: 8, borderBottomWidth: 32,
-          borderLeftColor: "transparent", borderRightColor: "transparent",
-          borderBottomColor: color,
-          shadowColor: color, shadowOpacity: 1, shadowRadius: 10,
-        }} />
-        {/* cone direito (atrás) */}
-        <View style={{
-          width: 0, height: 0,
-          borderLeftWidth: 5, borderRightWidth: 5, borderBottomWidth: 22,
-          borderLeftColor: "transparent", borderRightColor: "transparent",
-          borderBottomColor: color, opacity: 0.55,
-          transform: [{ scaleY: 0.85 }],
-        }} />
-      </View>
-      {/* base circular do bus */}
-      <View style={{
-        width: 32, height: 6,
-        borderRadius: 3,
-        backgroundColor: color,
-        opacity: 0.8,
-        marginTop: 1,
-        shadowColor: color, shadowOpacity: 0.8, shadowRadius: 6,
-      }} />
-      {/* segunda base mais fina */}
-      <View style={{
-        width: 36, height: 3,
-        borderRadius: 2,
-        backgroundColor: color,
-        opacity: 0.5,
-        marginTop: 1,
-      }} />
-    </View>
-  );
-}
 
 function fmt(n: number) {
   if (n >= 1_000_000_000) return (n / 1_000_000_000).toFixed(1) + "B";
@@ -351,6 +87,18 @@ export default function HomeScreen() {
   const [timelineStep, setTimelineStep] = useState(-1);
   const [panelMinimized, setPanelMinimized] = useState(false);
 
+  // Guarda todos os setTimeout ativos para limpar no unmount/reset (evita memory leak
+  // e warning de "setState em componente desmontado" do React).
+  const timeoutIds = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const schedule = (fn: () => void, ms: number) => {
+    const id = setTimeout(fn, ms);
+    timeoutIds.current.push(id);
+  };
+  const clearAllTimeouts = () => {
+    timeoutIds.current.forEach((id) => clearTimeout(id));
+    timeoutIds.current = [];
+  };
+
   // animações
   const flashAnim = useRef(new Animated.Value(0)).current;
   const shakeAnim = useRef(new Animated.Value(0)).current;
@@ -358,42 +106,54 @@ export default function HomeScreen() {
   const fireballScale = useRef(new Animated.Value(0)).current;
   const shockwaveScale = useRef(new Animated.Value(0)).current;
   const shockwaveOpacity = useRef(new Animated.Value(0)).current;
-  const mushroomY = useRef(new Animated.Value(50)).current;
-  const mushroomOpacity = useRef(new Animated.Value(0)).current;
   const weaponSpin = useRef(new Animated.Value(0)).current;
   const weaponTilt = useRef(new Animated.Value(0)).current;
   const falloutAnim = useRef(new Animated.Value(0)).current;
 
-  // pulse de alerta no header
+  // pulse de alerta no header — guarda referência pra parar no unmount
   useEffect(() => {
-    Animated.loop(
+    const loop = Animated.loop(
       Animated.sequence([
         Animated.timing(warningAnim, { toValue: 0.3, duration: 700, useNativeDriver: true }),
         Animated.timing(warningAnim, { toValue: 1, duration: 700, useNativeDriver: true }),
       ]),
-    ).start();
+    );
+    loop.start();
+    return () => loop.stop();
+    // warningAnim é um Animated.Value persistente via useRef, não precisa estar nas deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Cleanup global de timeouts no unmount do componente
+  useEffect(() => {
+    return () => clearAllTimeouts();
   }, []);
 
   // animação 3D de rotação contínua quando modal de armas está aberto
   useEffect(() => {
-    if (showWeapons) {
-      Animated.loop(
-        Animated.timing(weaponSpin, {
-          toValue: 1, duration: 6000, easing: Easing.linear, useNativeDriver: true,
-        }),
-      ).start();
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(weaponTilt, { toValue: 1, duration: 2000, useNativeDriver: true }),
-          Animated.timing(weaponTilt, { toValue: 0, duration: 2000, useNativeDriver: true }),
-        ]),
-      ).start();
-    } else {
-      weaponSpin.stopAnimation();
-      weaponTilt.stopAnimation();
+    if (!showWeapons) {
       weaponSpin.setValue(0);
       weaponTilt.setValue(0);
+      return;
     }
+    const spinLoop = Animated.loop(
+      Animated.timing(weaponSpin, {
+        toValue: 1, duration: 6000, easing: Easing.linear, useNativeDriver: true,
+      }),
+    );
+    const tiltLoop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(weaponTilt, { toValue: 1, duration: 2000, useNativeDriver: true }),
+        Animated.timing(weaponTilt, { toValue: 0, duration: 2000, useNativeDriver: true }),
+      ]),
+    );
+    spinLoop.start();
+    tiltLoop.start();
+    return () => {
+      spinLoop.stop();
+      tiltLoop.stop();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showWeapons]);
 
   const kt = weapon.kt;
@@ -438,26 +198,24 @@ export default function HomeScreen() {
   // fallout (em metros) — proporcional à raiz cúbica do kt
   const falloutRadiusKm = Math.pow(kt, 1 / 3) * 4 * windStrength * falloutMult;
 
-  function locateMe() {
-    (async () => {
-      try {
-        const { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== "granted") return;
-        const pos = await Location.getCurrentPositionAsync({});
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-        const coord = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
-        setLocation(coord);
-        setCity("MINHA POSIÇÃO");
-        setCustomTarget(true);
-        setCurrentDensity(2000); // densidade suburbana
-        setStats({ totalPop: 500000, destroyed: 0, severe: 0, light: 0, fallout: 0 });
-        setDetonated(false);
-        setWave(0);
-        mapRef.current?.flyTo(coord.latitude, coord.longitude, 0.15);
-      } catch (e) {
-        console.warn(e);
-      }
-    })();
+  async function locateMe() {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") return;
+      const pos = await Location.getCurrentPositionAsync({});
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      const coord = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
+      setLocation(coord);
+      setCity("MINHA POSIÇÃO");
+      setCustomTarget(true);
+      setCurrentDensity(2000); // densidade suburbana
+      setStats({ totalPop: 500000, destroyed: 0, severe: 0, light: 0, fallout: 0 });
+      setDetonated(false);
+      setWave(0);
+      mapRef.current?.flyTo(coord.latitude, coord.longitude, 0.15);
+    } catch {
+      // permissão negada ou GPS indisponível — ignora silenciosamente
+    }
   }
 
   function selectCity(name: string) {
@@ -489,6 +247,7 @@ export default function HomeScreen() {
 
   function triggerDetonation() {
     if (detonated) {
+      clearAllTimeouts(); // cancela animações em andamento
       setDetonated(false);
       setWave(0);
       setShowFallout(false);
@@ -499,8 +258,6 @@ export default function HomeScreen() {
       fireballScale.setValue(0);
       shockwaveScale.setValue(0);
       shockwaveOpacity.setValue(0);
-      mushroomY.setValue(50);
-      mushroomOpacity.setValue(0);
       falloutAnim.setValue(0);
       return;
     }
@@ -594,19 +351,19 @@ export default function HomeScreen() {
 
     // ÁUDIO: sirene primeiro, depois boom + rumble
     playSiren();
-    setTimeout(() => playBoom(), 2200);
+    schedule(() => playBoom(), 2200);
 
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-    setTimeout(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy), 2300);
-    setTimeout(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy), 2500);
-    setTimeout(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium), 3000);
-    setTimeout(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium), 3500);
+    schedule(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy), 2300);
+    schedule(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy), 2500);
+    schedule(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium), 3000);
+    schedule(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium), 3500);
 
     // TIMELINE
-    timeline.forEach((_, i) => setTimeout(() => setTimelineStep(i), 2200 + i * 900));
+    timeline.forEach((_, i) => schedule(() => setTimelineStep(i), 2200 + i * 900));
 
     // FLASH ofuscante (depois da sirene)
-    setTimeout(() => {
+    schedule(() => {
       Animated.sequence([
         Animated.timing(flashAnim, { toValue: 1, duration: 60, useNativeDriver: true }),
         Animated.timing(flashAnim, { toValue: 0.4, duration: 200, useNativeDriver: true }),
@@ -638,24 +395,14 @@ export default function HomeScreen() {
       ]),
     ]).start();
 
-    // COGUMELO sobe
-    Animated.parallel([
-      Animated.timing(mushroomY, { toValue: -200, duration: 2500, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
-      Animated.sequence([
-        Animated.timing(mushroomOpacity, { toValue: 0, duration: 600, useNativeDriver: true }),
-        Animated.timing(mushroomOpacity, { toValue: 1, duration: 800, useNativeDriver: true }),
-        Animated.timing(mushroomOpacity, { toValue: 0.7, duration: 2000, useNativeDriver: true }),
-      ]),
-    ]).start();
-
     // Sequência de ondas (depois da sirene)
-    setTimeout(() => setWave(1), 2200);
-    setTimeout(() => setWave(2), 2450);
-    setTimeout(() => setWave(3), 2700);
-    setTimeout(() => setWave(4), 2950);
-    setTimeout(() => { setWave(5); setDetonated(true); }, 3200);
+    schedule(() => setWave(1), 2200);
+    schedule(() => setWave(2), 2450);
+    schedule(() => setWave(3), 2700);
+    schedule(() => setWave(4), 2950);
+    schedule(() => { setWave(5); setDetonated(true); }, 3200);
 
-    setTimeout(() => {
+    schedule(() => {
       setShowFallout(true);
       Animated.timing(falloutAnim, {
         toValue: 1, duration: 4000, easing: Easing.out(Easing.quad), useNativeDriver: false,
@@ -1180,16 +927,6 @@ const s = StyleSheet.create({
   mapWrap: { ...StyleSheet.absoluteFillObject },
   flash: { ...StyleSheet.absoluteFillObject, backgroundColor: "#fff", zIndex: 99 },
 
-  mushroom: {
-    position: "absolute",
-    top: height * 0.4,
-    left: 0, right: 0,
-    alignItems: "center",
-    zIndex: 50,
-  },
-  mushroomTxt: { fontSize: 100 },
-  mushroomStem: { fontSize: 60, color: "#888", marginTop: -20 },
-
   hud: {
     position: "absolute",
     top: Platform.OS === "android" ? (StatusBar.currentHeight ?? 32) + 8 : 54,
@@ -1229,19 +966,6 @@ const s = StyleSheet.create({
     justifyContent: "center", alignItems: "center",
   },
   fabIcon: { fontSize: 20 },
-
-  crosshair: { width: 50, height: 50, justifyContent: "center", alignItems: "center" },
-  crosshairH: { position: "absolute", width: 50, height: 1, backgroundColor: RED },
-  crosshairV: { position: "absolute", width: 1, height: 50, backgroundColor: RED },
-  crosshairDot: {
-    width: 8, height: 8, borderRadius: 4,
-    borderWidth: 2, borderColor: RED, backgroundColor: "transparent",
-  },
-  crosshairRing: {
-    position: "absolute",
-    width: 30, height: 30, borderRadius: 15,
-    borderWidth: 1, borderColor: "rgba(255,59,48,0.4)",
-  },
 
   panel: {
     position: "absolute", bottom: 0, left: 0, right: 0,
