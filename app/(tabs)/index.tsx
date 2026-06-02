@@ -17,13 +17,7 @@ import {
   TextInput,
   View,
 } from "react-native";
-import MapView, {
-  Circle,
-  MapPressEvent,
-  Marker,
-  Polygon,
-  PROVIDER_GOOGLE,
-} from "react-native-maps";
+import NukeMap, { NukeMapRef } from "../../components/NukeMap";
 
 const { width, height } = Dimensions.get("window");
 
@@ -295,15 +289,6 @@ function Bomb3D({ shape, color }: { shape: BombShape; color: string }) {
   );
 }
 
-const darkMap = [
-  { elementType: "geometry", stylers: [{ color: "#0a0a0a" }] },
-  { elementType: "labels.text.fill", stylers: [{ color: "#444" }] },
-  { elementType: "labels.text.stroke", stylers: [{ color: "#000" }] },
-  { featureType: "road", elementType: "geometry", stylers: [{ color: "#1a1a1a" }] },
-  { featureType: "water", elementType: "geometry", stylers: [{ color: "#050a0f" }] },
-  { featureType: "poi", stylers: [{ visibility: "off" }] },
-];
-
 function fmt(n: number) {
   if (n >= 1_000_000_000) return (n / 1_000_000_000).toFixed(1) + "B";
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -341,7 +326,7 @@ function falloutPolygon(
 
 // ── COMPONENTE PRINCIPAL ──────────────────────────────────────────────────────
 export default function HomeScreen() {
-  const mapRef = useRef<MapView>(null);
+  const mapRef = useRef<NukeMapRef>(null);
 
   const [city, setCity] = useState("São Paulo");
   const [customTarget, setCustomTarget] = useState(false);
@@ -468,10 +453,7 @@ export default function HomeScreen() {
         setStats({ totalPop: 500000, destroyed: 0, severe: 0, light: 0, fallout: 0 });
         setDetonated(false);
         setWave(0);
-        mapRef.current?.animateToRegion(
-          { ...coord, latitudeDelta: 0.15, longitudeDelta: 0.15 },
-          900,
-        );
+        mapRef.current?.flyTo(coord.latitude, coord.longitude, 0.15);
       } catch (e) {
         console.warn(e);
       }
@@ -490,20 +472,13 @@ export default function HomeScreen() {
     setDetonated(false);
     setWave(0);
     setShowCities(false);
-    mapRef.current?.animateToRegion(
-      {
-        latitude: data.latitude, longitude: data.longitude,
-        latitudeDelta: 0.15, longitudeDelta: 0.15,
-      },
-      900,
-    );
+    mapRef.current?.flyTo(data.latitude, data.longitude, 0.15);
   }
 
-  function handleMapPress(e: MapPressEvent) {
+  function handleMapPress(lat: number, lng: number) {
     if (detonated || wave > 0) return; // trava o mapa durante/depois da explosão
-    const coord = e.nativeEvent.coordinate;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setLocation(coord);
+    setLocation({ latitude: lat, longitude: lng });
     setCity("ALVO PERSONALIZADO");
     setCustomTarget(true);
     setCurrentDensity(DEFAULT_DENSITY);
@@ -615,14 +590,7 @@ export default function HomeScreen() {
     // auto-zoom pra caber a explosão na tela
     const maxRadius = Math.max(thermal, light_zone) * 2.4; // metros
     const delta = Math.max(0.05, maxRadius / 111000); // metros → graus aprox
-    mapRef.current?.animateToRegion(
-      {
-        ...location,
-        latitudeDelta: delta,
-        longitudeDelta: delta,
-      },
-      900,
-    );
+    mapRef.current?.flyTo(location.latitude, location.longitude, delta);
 
     // ÁUDIO: sirene primeiro, depois boom + rumble
     playSiren();
@@ -743,73 +711,25 @@ export default function HomeScreen() {
 
       {/* MAPA */}
       <Animated.View style={[s.mapWrap, { transform: [{ translateX: shakeAnim }] }]}>
-        <MapView
+        <NukeMap
           ref={mapRef}
-          provider={PROVIDER_GOOGLE}
-          style={StyleSheet.absoluteFillObject}
-          mapType="satellite"
-          customMapStyle={darkMap}
+          initialLat={location.latitude}
+          initialLng={location.longitude}
+          location={location}
           onPress={handleMapPress}
-          initialRegion={{
-            latitude: location.latitude,
-            longitude: location.longitude,
-            latitudeDelta: 0.15,
-            longitudeDelta: 0.15,
-          }}
-        >
-          {!detonated && wave === 0 && (
-            <Marker coordinate={location} anchor={{ x: 0.5, y: 0.5 }}>
-              <View style={s.crosshair}>
-                <View style={s.crosshairH} />
-                <View style={s.crosshairV} />
-                <View style={s.crosshairDot} />
-                <View style={s.crosshairRing} />
-              </View>
-            </Marker>
-          )}
-
-          {wave >= 1 && (
-            <Circle center={location} radius={fireball} strokeColor="#fff"
-              strokeWidth={2} fillColor="rgba(255,240,200,0.95)" />
-          )}
-          {wave >= 2 && (
-            <Circle center={location} radius={heavy} strokeColor="#ff2200"
-              strokeWidth={1.5} fillColor="rgba(255,60,0,0.5)" />
-          )}
-          {wave >= 3 && (
-            <Circle center={location} radius={moderate} strokeColor="#ff6600"
-              strokeWidth={1} fillColor="rgba(255,120,0,0.3)" />
-          )}
-          {wave >= 4 && (
-            <Circle center={location} radius={light_zone} strokeColor="#ffcc00"
-              strokeWidth={1} fillColor="rgba(255,200,0,0.15)" />
-          )}
-          {wave >= 5 && (
-            <Circle center={location} radius={thermal} strokeColor="rgba(255,100,0,0.5)"
-              strokeWidth={1} fillColor="rgba(255,80,0,0.08)" />
-          )}
-
-          {/* CRATERA (ground burst, permanente) */}
-          {detonated && burstType === "ground" && craterRadius > 0 && (
-            <Circle
-              center={location}
-              radius={craterRadius}
-              strokeColor="#3a2410"
-              strokeWidth={2}
-              fillColor="rgba(40,25,12,0.92)"
-            />
-          )}
-
-          {/* FALLOUT POLYGON */}
-          {showFallout && (
-            <Polygon
-              coordinates={falloutPoly}
-              strokeColor="rgba(120,255,120,0.7)"
-              strokeWidth={1.5}
-              fillColor="rgba(80,255,80,0.18)"
-            />
-          )}
-        </MapView>
+          showCrosshair={!detonated && wave === 0}
+          wave={wave}
+          fireball={fireball}
+          heavy={heavy}
+          moderate={moderate}
+          light_zone={light_zone}
+          thermal={thermal}
+          burstType={burstType}
+          detonated={detonated}
+          craterRadius={craterRadius}
+          showFallout={showFallout}
+          falloutPoly={falloutPoly}
+        />
       </Animated.View>
 
       {/* FLASH NUCLEAR */}
@@ -845,10 +765,7 @@ export default function HomeScreen() {
         <Pressable
           style={s.fabBtn}
           onPress={() =>
-            mapRef.current?.animateToRegion(
-              { ...location, latitudeDelta: 0.15, longitudeDelta: 0.15 },
-              500,
-            )
+            mapRef.current?.flyTo(location.latitude, location.longitude, 0.15)
           }
         >
           <Text style={s.fabIcon}>🎯</Text>
