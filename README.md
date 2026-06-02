@@ -141,3 +141,21 @@ Escaneie o QR Code com o app **Expo Go** (Android / iOS).
 Este aplicativo é **estritamente educacional e de entretenimento**. Os modelos físicos, embora calibrados contra literatura científica pública, são simplificações didáticas. Nenhuma informação aqui representa capacidade operacional real de qualquer nação ou sistema de armas.
 
 O propósito é ilustrar a escala absurda das armas nucleares de forma que números absolutos não conseguem comunicar — e reforçar por que essas armas jamais devem ser usadas.
+
+---
+
+## 👤 Autor
+
+**Pedro Aruana**
+
+[![GitHub](https://img.shields.io/badge/GitHub-Pedroaruana-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Pedroaruana)
+
+Projeto desenvolvido por **Pedro Aruana** como demonstração de habilidades em desenvolvimento mobile, modelagem física e design de UI/UX.
+
+> Todo o código, modelagem matemática, design de interface e arquitetura deste aplicativo foram desenvolvidos por mim.
+
+---
+
+<p align="center">
+  Feito com ☢️ por <b>Pedro Aruana</b>
+</p>
