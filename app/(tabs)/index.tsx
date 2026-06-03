@@ -1,3 +1,16 @@
+/**
+ * NUKEMAP APP — Tela principal de simulação
+ *
+ * @author  Pedro Aruana <github.com/Pedroaruana>
+ * @license MIT
+ * @see     https://github.com/Pedroaruana/nukemap-app
+ *
+ * Simulador realista de impacto nuclear baseado em modelos físicos do manual
+ * Glasstone-Dolan (efeitos de armas nucleares) e dados de Hiroshima/Nagasaki.
+ * Toda a lógica de cálculo, modelos 3D, animações e UI desenvolvidos por
+ * Pedro Aruana — qualquer reuso requer atribuição (ver LICENSE).
+ */
+
 import Slider from "@react-native-community/slider";
 import { useAudioPlayer } from "expo-audio";
 import * as Haptics from "expo-haptics";

@@ -7,6 +7,7 @@
 ![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
 ![iOS](https://img.shields.io/badge/iOS-000000?style=for-the-badge&logo=apple&logoColor=white)
 [![Vercel](https://img.shields.io/badge/Live_Demo-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://nukemap-app.vercel.app)
+[![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 ![Autor](https://img.shields.io/badge/Autor-Pedro_Aruana-ff3b30?style=for-the-badge&logo=github&logoColor=white)
 
 > 🌐 **[Acesse a demo online →](https://nukemap-app.vercel.app)** _(versão web com Leaflet/OpenStreetMap)_

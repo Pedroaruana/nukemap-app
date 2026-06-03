@@ -1,4 +1,11 @@
-// NukeMap (NATIVE) — usa react-native-maps. Web tem versão paralela (.web.tsx) com Leaflet.
+/**
+ * NukeMap (mobile nativo) — wrapper sobre react-native-maps.
+ * A versão web fica em NukeMap.web.tsx (Leaflet). Mesma API, runtime distinto.
+ *
+ * @author  Pedro Aruana <github.com/Pedroaruana>
+ * @license MIT
+ */
+
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
 import { StyleSheet, View } from "react-native";
 import MapView, { Circle, MapPressEvent, Marker, Polygon, PROVIDER_GOOGLE } from "react-native-maps";

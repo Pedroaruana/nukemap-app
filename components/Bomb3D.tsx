@@ -1,3 +1,11 @@
+/**
+ * Bomb3D — modelos 3D estilizados de armas nucleares feitos só com Views + transforms.
+ * Sem dependência externa de bibliotecas 3D (Three.js, Skia, etc).
+ *
+ * @author  Pedro Aruana <github.com/Pedroaruana>
+ * @license MIT
+ */
+
 // Modelos 3D de armas nucleares renderizados com primitivos do React Native
 // (sem dependência externa de 3D — apenas Views + transforms).
 // Cada formato é uma silhueta estilizada da arma real:

@@ -1,3 +1,8 @@
+/**
+ * @author  Pedro Aruana <github.com/Pedroaruana>
+ * @license MIT
+ */
+
 // Arsenal nuclear histórico — rendimentos em kilotons (kt) baseados em registros
 // públicos da NRDC, FAS e Bulletin of the Atomic Scientists.
 
