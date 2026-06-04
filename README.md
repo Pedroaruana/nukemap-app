@@ -6,11 +6,20 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-yellow?style=for-the-badge)
 
-App mobile de simulação de impacto nuclear que fiz pra estudar React Native, mapas e animações. Inspirado no site NUKEMAP.
+App mobile de simulação de impacto nuclear que desenvolvi pra praticar React Native. A ideia veio do site NUKEMAP — quis recriar algo parecido do zero pra entender na prática como funciona mapa, geolocalização e animações em mobile.
 
 > 🌐 **[Ver demo online →](https://nukemap-app.vercel.app)**
 >
 > Roda no browser (Leaflet/OpenStreetMap) e no celular (Google Maps). Mesmo código, mapa diferente por plataforma.
+
+### O que aprendi fazendo esse projeto
+
+Foi meu primeiro projeto sério em React Native. As maiores dificuldades foram:
+- Entender como o `react-native-maps` funciona com o Google Maps (e descobrir que precisa de API key em produção)
+- Fazer o mesmo código rodar no mobile e na web — tive que criar dois componentes de mapa separados (`NukeMap.tsx` e `NukeMap.web.tsx`) que o Expo resolve automaticamente por plataforma
+- Controlar as animações com `Animated` sem travar a UI — aprendi sobre `useNativeDriver` na prática
+- Limpar `setTimeout` no unmount pra não vazar memória (aprendi isso debugando um bug que resetava a simulação no meio da explosão)
+- Configurar o deploy na Vercel com `expo export --platform web`
 
 ---
 
