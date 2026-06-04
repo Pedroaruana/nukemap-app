@@ -1,10 +1,4 @@
-/**
- * NukeMap (web) — wrapper sobre react-leaflet com tiles do CartoCDN dark.
- * Sem chave de API. A versão mobile fica em NukeMap.tsx (react-native-maps).
- *
- * @author  Pedro Aruana <github.com/Pedroaruana>
- * @license MIT
- */
+// versao do mapa pra rodar na web (usa leaflet pq react-native-maps nao funciona no browser)
 
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";

@@ -1,10 +1,4 @@
-/**
- * NukeMap (mobile nativo) — wrapper sobre react-native-maps.
- * A versão web fica em NukeMap.web.tsx (Leaflet). Mesma API, runtime distinto.
- *
- * @author  Pedro Aruana <github.com/Pedroaruana>
- * @license MIT
- */
+// mapa pra mobile (a versao web usa leaflet em NukeMap.web.tsx)
 
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
 import { StyleSheet, View } from "react-native";

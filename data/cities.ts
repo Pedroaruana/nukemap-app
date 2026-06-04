@@ -1,11 +1,5 @@
-/**
- * @author  Pedro Aruana <github.com/Pedroaruana>
- * @license MIT
- */
-
-// Banco de cidades com densidade urbana real (pessoas/km² no núcleo central).
-// Fonte: dados oficiais de censos nacionais e UN Habitat (2020-2024).
-// A densidade é usada para calcular vítimas por zona de impacto.
+// cidades com densidade urbana (peguei dos dados de censo)
+// uso a densidade pra calcular quantas pessoas morrem em cada zona
 
 export type City = {
   latitude: number;

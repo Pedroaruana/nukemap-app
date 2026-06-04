@@ -1,18 +1,5 @@
-/**
- * Bomb3D — modelos 3D estilizados de armas nucleares feitos só com Views + transforms.
- * Sem dependência externa de bibliotecas 3D (Three.js, Skia, etc).
- *
- * @author  Pedro Aruana <github.com/Pedroaruana>
- * @license MIT
- */
-
-// Modelos 3D de armas nucleares renderizados com primitivos do React Native
-// (sem dependência externa de 3D — apenas Views + transforms).
-// Cada formato é uma silhueta estilizada da arma real:
-//   gravity → cilindro alongado tipo Little Boy / B83
-//   sphere  → bomba esférica tipo Fat Man
-//   tsar    → corpo gordo com nose arredondado tipo Tsar Bomba
-//   mirv    → cluster de cones reentry vehicles tipo W76 / Satan
+// bombas em 3d feitas so com View, sem biblioteca de 3d
+// tipos: gravity (cilindro), sphere (Fat Man), tsar, mirv (cluster de cones)
 
 import React from "react";
 import { View } from "react-native";
