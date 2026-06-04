@@ -1,16 +1,4 @@
-/**
- * NUKEMAP APP — Tela principal de simulação
- *
- * @author  Pedro Aruana <github.com/Pedroaruana>
- * @license MIT
- * @see     https://github.com/Pedroaruana/nukemap-app
- *
- * Simulador realista de impacto nuclear baseado em modelos físicos do manual
- * Glasstone-Dolan (efeitos de armas nucleares) e dados de Hiroshima/Nagasaki.
- * Toda a lógica de cálculo, modelos 3D, animações e UI desenvolvidos por
- * Pedro Aruana — qualquer reuso requer atribuição (ver LICENSE).
- */
-
+// tela principal do nukemap
 import Slider from "@react-native-community/slider";
 import { useAudioPlayer } from "expo-audio";
 import * as Haptics from "expo-haptics";
@@ -100,8 +88,7 @@ export default function HomeScreen() {
   const [timelineStep, setTimelineStep] = useState(-1);
   const [panelMinimized, setPanelMinimized] = useState(false);
 
-  // Guarda todos os setTimeout ativos para limpar no unmount/reset (evita memory leak
-  // e warning de "setState em componente desmontado" do React).
+  // guarda os timeouts pra limpar depois
   const timeoutIds = useRef<ReturnType<typeof setTimeout>[]>([]);
   const schedule = (fn: () => void, ms: number) => {
     const id = setTimeout(fn, ms);
@@ -171,15 +158,15 @@ export default function HomeScreen() {
 
   const kt = weapon.kt;
 
-  // Escala realista (cube-root law, calibrada contra NUKEMAP / Glasstone-Dolan)
-  // Referência Little Boy (15 kt): fireball ~150m, 20psi ~0.9km, 5psi ~1.7km, 1psi ~4.4km, queimadura ~2.1km
+  // raios calculados com raiz cubica do kt (formula real)
   const cbrt = Math.cbrt(kt);
-  // Altura ótima (HOB) para maximizar 5psi — fórmula de Glasstone-Dolan
+  // altura ideal pra detonar
   const optimalHOB = 220 * cbrt;
-  // Penalidade quando altitude se afasta do ótimo (parabólica)
+  // quanto mais longe do ideal, menos eficiente
   const altOffset = burstType === "air" ? Math.abs(altitude - optimalHOB) / Math.max(optimalHOB, 1) : 0;
   const altPenalty = Math.max(0.65, 1 - altOffset * altOffset * 0.45);
 
+  // air burst aumenta o raio, ground burst diminui mas faz mais fallout
   const blastMult = burstType === "air" ? 1.30 * altPenalty : burstType === "ground" ? 0.95 : 1.0;
   const thermalMult = burstType === "air" ? 1.20 * altPenalty : burstType === "ground" ? 0.70 : 1.0;
   const falloutMult = burstType === "ground" ? 4.5 : burstType === "air" ? 0.2 : 1.0;
@@ -282,12 +269,11 @@ export default function HomeScreen() {
     const pop = customTarget ? stats.totalPop : CITIES[city]?.population || 1_000_000;
     const density = currentDensity;
 
-    // Áreas em km² (raios em metros → /1e6) — zonas concêntricas em ordem crescente
+    // calcula area de cada zona em km2
     const PI = Math.PI;
     const ring = (rOut: number, rIn: number) =>
       rOut > rIn ? (PI * (rOut ** 2 - rIn ** 2)) / 1e6 : 0;
 
-    // ordena os raios externos (fireball < heavy < moderate < thermal? < light_zone)
     const r1 = fireball;
     const r2 = Math.max(r1, heavy);
     const r3 = Math.max(r2, moderate);
@@ -297,22 +283,17 @@ export default function HomeScreen() {
     const areaFireball = (PI * r1 ** 2) / 1e6;
     const areaHeavy    = ring(r2, r1);
     const areaModerate = ring(r3, r2);
-    const areaThermal  = ring(r4, r3); // anel onde queimaduras dominam
+    const areaThermal  = ring(r4, r3);
     const areaLight    = ring(r5, r4);
 
-    // Densidade decai pra fora do centro (cidade não é homogênea)
+    // pessoas em cada zona (menor densidade pra fora)
     const popFireball = areaFireball * density * 1.0;
     const popHeavy    = areaHeavy    * density * 0.95;
     const popModerate = areaModerate * density * 0.80;
     const popThermal  = areaThermal  * density * 0.55;
     const popLight    = areaLight    * density * 0.35;
 
-    // Taxas de mortalidade por zona (Glasstone-Dolan + estudos de Hiroshima):
-    //  fireball     → 98% mortos (vaporização)
-    //  20psi heavy  → 90% mortos, 10% feridos graves
-    //  5psi moderate→ 50% mortos, 45% feridos graves, 5% leves
-    //  1psi light   →  5% mortos, 25% feridos graves, 30% leves
-    //  thermal      → 25% mortos por queimaduras, 50% feridos graves
+    // taxa de morte por zona
     let deaths =
       popFireball * 0.98 +
       popHeavy    * 0.90 +
