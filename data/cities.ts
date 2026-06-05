@@ -20,6 +20,8 @@ export const CITIES: Record<string, City> = {
   "Porto Alegre":    { latitude: -30.0346, longitude: -51.2177, population: 1490000,  country: "BR", density: 2800 },
   "Recife":          { latitude:  -8.0476, longitude: -34.8770, population: 4100000,  country: "BR", density: 7000 },
   "Fortaleza":       { latitude:  -3.7172, longitude: -38.5433, population: 4100000,  country: "BR", density: 8000 },
+  "Belém":           { latitude:  -1.4558, longitude: -48.5044, population: 2500000,  country: "BR", density: 1300 },
+  "Goiânia":         { latitude: -16.6869, longitude: -49.2648, population: 1500000,  country: "BR", density: 1700 },
 
   "Nova York":       { latitude:  40.7128, longitude: -74.0060, population: 19000000, country: "US", density: 11000 },
   "Los Angeles":     { latitude:  34.0522, longitude: -118.2437,population: 13000000, country: "US", density: 3200 },
