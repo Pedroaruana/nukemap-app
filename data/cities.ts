@@ -34,6 +34,7 @@ export const CITIES: Record<string, City> = {
 
   "Cidade do México":{ latitude:  19.4326, longitude: -99.1332, population: 22000000, country: "MX", density: 6000 },
   "Buenos Aires":    { latitude: -34.6037, longitude: -58.3816, population: 15000000, country: "AR", density: 14400 },
+  "Montevidéu":      { latitude: -34.9011, longitude: -56.1645, population: 1800000,  country: "UY", density: 2900 },
   "Lima":            { latitude: -12.0464, longitude: -77.0428, population: 10700000, country: "PE", density: 3300 },
   "Bogotá":          { latitude:   4.7110, longitude: -74.0721, population: 10900000, country: "CO", density: 4300 },
   "Santiago":        { latitude: -33.4489, longitude: -70.6693, population: 6800000,  country: "CL", density: 8500 },
