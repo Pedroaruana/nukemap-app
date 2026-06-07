@@ -501,7 +501,7 @@ export default function HomeScreen() {
       {/* BOTÕES FLUTUANTES */}
       <View style={s.fab}>
         <Pressable style={s.fabBtn} onPress={locateMe}>
-          <Text style={s.fabIcon}>📍</Text>
+          <Text style={s.fabIcon}>📍 Usar GPS</Text>
         </Pressable>
         <Pressable
           style={s.fabBtn}
