@@ -913,7 +913,7 @@ export default function HomeScreen() {
 }
 
 // ─── STYLES ───────────────────────────────────────────────────────────────────
-const RED = "#ff3b30";
+const RED = "#e8392e";
 const YELLOW = "#ffd200";
 const DIM = "#1a1a1a";
 const BORDER = "#2a2a2a";
