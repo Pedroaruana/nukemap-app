@@ -38,6 +38,28 @@ function fmtFull(n: number) {
   return Math.floor(n).toLocaleString("pt-BR");
 }
 
+function CountUp({ value, style }: { value: number; style?: object }) {
+  const [display, setDisplay] = React.useState(0);
+  useEffect(() => {
+    setDisplay(0);
+    const steps = 40;
+    const stepMs = 1400 / steps;
+    let i = 0;
+    const timer = setInterval(() => {
+      i++;
+      const eased = 1 - Math.pow(1 - i / steps, 3);
+      setDisplay(i >= steps ? value : Math.floor(value * eased));
+      if (i >= steps) clearInterval(timer);
+    }, stepMs);
+    return () => clearInterval(timer);
+  }, [value]);
+  return (
+    <Text style={style} adjustsFontSizeToFit numberOfLines={1}>
+      {fmtFull(display)}
+    </Text>
+  );
+}
+
 // Gera polígono de fallout (forma de gota com vento)
 function falloutPolygon(
   center: { latitude: number; longitude: number },
@@ -562,22 +584,22 @@ export default function HomeScreen() {
           <View style={s.statsRow}>
             <View style={s.statBox}>
               <Text style={s.statIcon}>💀</Text>
-              <Text style={s.statVal} adjustsFontSizeToFit numberOfLines={1}>{fmtFull(stats.destroyed)}</Text>
+              <CountUp value={stats.destroyed} style={s.statVal} />
               <Text style={s.statLbl}>MORTES</Text>
             </View>
             <View style={s.statBox}>
               <Text style={s.statIcon}>🏚</Text>
-              <Text style={s.statVal} adjustsFontSizeToFit numberOfLines={1}>{fmtFull(stats.severe)}</Text>
+              <CountUp value={stats.severe} style={s.statVal} />
               <Text style={s.statLbl}>CRÍTICOS</Text>
             </View>
             <View style={s.statBox}>
               <Text style={s.statIcon}>☣</Text>
-              <Text style={[s.statVal, { color: "#78ff78" }]} adjustsFontSizeToFit numberOfLines={1}>{fmtFull(stats.fallout)}</Text>
+              <CountUp value={stats.fallout} style={{ ...s.statVal, color: "#78ff78" }} />
               <Text style={s.statLbl}>CONTAMINADOS</Text>
             </View>
             <View style={s.statBox}>
               <Text style={s.statIcon}>👥</Text>
-              <Text style={s.statVal} adjustsFontSizeToFit numberOfLines={1}>{fmtFull(stats.totalPop)}</Text>
+              <CountUp value={stats.totalPop} style={s.statVal} />
               <Text style={s.statLbl}>POPULAÇÃO</Text>
             </View>
           </View>
