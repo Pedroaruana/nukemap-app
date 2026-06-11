@@ -205,6 +205,9 @@ export default function HomeScreen() {
   const thermal = 700 * Math.pow(kt, 0.41) * thermalMult;
   const craterRadius = burstType === "ground" ? 45 * Math.pow(kt, 0.3) : 0;
 
+  // tempo em segundos pra onda de choque chegar a 1km (escala com o rendimento)
+  const shockwaveTime = parseFloat((3 / Math.pow(Math.max(kt, 0.01) / 15, 0.15)).toFixed(1));
+
   // ── ÁUDIO ──────────────────────────────────────────────────────────────────
   const sirenPlayer = useAudioPlayer(require("../../assets/sounds/siren.wav"));
   const boomPlayer = useAudioPlayer(require("../../assets/sounds/boom.wav"));
@@ -603,6 +606,12 @@ export default function HomeScreen() {
               <Text style={s.statLbl}>POPULAÇÃO</Text>
             </View>
           </View>
+        )}
+
+        {detonated && (
+          <Text style={s.shockwaveInfo}>
+            ⚡ Onda de choque chega a 1 km em {shockwaveTime}s · {Math.round(1000 / shockwaveTime * 3.6)} km/h
+          </Text>
         )}
 
         {/* COMPARAÇÕES INTUITIVAS */}
@@ -1112,6 +1121,14 @@ const s = StyleSheet.create({
   altOptimal: {
     color: "#a8ff78", fontSize: 10, fontWeight: "900", letterSpacing: 2,
     textAlign: "center", marginTop: 2,
+  },
+
+  shockwaveInfo: {
+    color: "#ffcc00",
+    fontSize: 11,
+    fontWeight: "700",
+    textAlign: "center",
+    letterSpacing: 0.5,
   },
 
   // COMPARAÇÕES
