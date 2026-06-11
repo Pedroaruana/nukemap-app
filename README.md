@@ -10,7 +10,7 @@ App mobile de simulação de impacto nuclear que desenvolvi pra praticar React N
 
 > 🌐 **[Ver demo online →](https://nukemap-app.vercel.app)**
 >
-> Roda no browser (Leaflet/OpenStreetMap) e no celular (Google Maps). Mesmo código, mapa diferente por plataforma.
+> Roda no browser (satélite Esri com toggle pra mapa escuro) e no celular (Google Maps). Mesmo código, mapa diferente por plataforma.
 
 ### O que aprendi fazendo esse projeto
 
@@ -26,7 +26,7 @@ Foi meu primeiro projeto sério em React Native. As maiores dificuldades foram:
 ## Funcionalidades
 
 ### Mapa e localização
-- 57 cidades do mundo pré-configuradas com população e densidade real
+- 59 cidades do mundo pré-configuradas com população e densidade real
 - Toca no mapa pra escolher qualquer ponto como alvo
 - Botão de GPS pra detonar na sua localização
 
@@ -61,7 +61,7 @@ Desde o menor artefato nuclear já criado até a Tsar Bomba:
 | Framework | React Native 0.81 + Expo SDK 54 |
 | Roteamento | Expo Router |
 | Mapa (mobile) | react-native-maps (Google Maps satélite) |
-| Mapa (web) | react-leaflet (OpenStreetMap) |
+| Mapa (web) | react-leaflet (satélite Esri + toggle mapa escuro) |
 | Áudio | expo-audio |
 | Localização | expo-location |
 | Linguagem | TypeScript 5.9 strict |
