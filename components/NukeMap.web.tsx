@@ -2,7 +2,7 @@
 
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import React, { forwardRef, useImperativeHandle, useRef } from "react";
+import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { Circle, MapContainer, Marker, Polygon, TileLayer, useMap, useMapEvents } from "react-leaflet";
 
 export interface NukeMapRef {
@@ -63,6 +63,7 @@ function MapController({ flyToCmd }: { flyToCmd: React.MutableRefObject<((lat: n
 
 const NukeMap = forwardRef<NukeMapRef, NukeMapProps>((props, ref) => {
   const flyToCmd = useRef<((lat: number, lng: number, delta: number) => void) | null>(null);
+  const [mapStyle, setMapStyle] = useState<"satellite" | "dark">("satellite");
 
   useImperativeHandle(ref, () => ({
     flyTo: (lat, lng, delta) => flyToCmd.current?.(lat, lng, delta),
@@ -79,6 +80,20 @@ const NukeMap = forwardRef<NukeMapRef, NukeMapProps>((props, ref) => {
 
   return (
     <div style={{ position: "absolute", inset: 0, background: "#000" }}>
+      {/* Botão de alternância de estilo do mapa */}
+      <div
+        onClick={() => setMapStyle(s => s === "satellite" ? "dark" : "satellite")}
+        style={{
+          position: "absolute", top: 12, left: 12, zIndex: 1000,
+          background: "rgba(0,0,0,0.82)", border: "1px solid #333",
+          borderRadius: 8, padding: "6px 14px", cursor: "pointer",
+          color: "#fff", fontSize: 11, fontWeight: 700, letterSpacing: 1,
+          userSelect: "none",
+        }}
+      >
+        {mapStyle === "satellite" ? "🗺 MAPA" : "🛰 SATÉLITE"}
+      </div>
+
       <MapContainer
         center={initial}
         zoom={12}
@@ -86,11 +101,23 @@ const NukeMap = forwardRef<NukeMapRef, NukeMapProps>((props, ref) => {
         zoomControl={false}
         attributionControl={false}
       >
-        {/* Tile escuro tipo NUKEMAP */}
-        <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png"
-          subdomains={["a", "b", "c", "d"]}
-        />
+        {mapStyle === "satellite" ? (
+          <>
+            <TileLayer
+              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+              maxZoom={19}
+            />
+            <TileLayer
+              url="https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}@2x.png"
+              subdomains={["a", "b", "c", "d"]}
+            />
+          </>
+        ) : (
+          <TileLayer
+            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png"
+            subdomains={["a", "b", "c", "d"]}
+          />
+        )}
 
         <MapController flyToCmd={flyToCmd} />
         <MapClickHandler onPress={onPress} />
