@@ -614,6 +614,12 @@ export default function HomeScreen() {
           </Text>
         )}
 
+        {detonated && (
+          <Text style={s.radiusInfo}>
+            📏 Destruição total: {(heavy / 1000).toFixed(1)} km · zona leve: {(light_zone / 1000).toFixed(1)} km
+          </Text>
+        )}
+
         {/* COMPARAÇÕES INTUITIVAS */}
         {detonated && (
           <View style={s.compBox}>
@@ -1127,6 +1133,14 @@ const s = StyleSheet.create({
     color: "#ffcc00",
     fontSize: 11,
     fontWeight: "700",
+    textAlign: "center",
+    letterSpacing: 0.5,
+  },
+
+  radiusInfo: {
+    color: "#aaa",
+    fontSize: 11,
+    fontWeight: "600",
     textAlign: "center",
     letterSpacing: 0.5,
   },
