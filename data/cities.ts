@@ -22,6 +22,12 @@ export const CITIES: Record<string, City> = {
   "Fortaleza":       { latitude:  -3.7172, longitude: -38.5433, population: 4100000,  country: "BR", density: 8000 },
   "Belém":           { latitude:  -1.4558, longitude: -48.5044, population: 2500000,  country: "BR", density: 1300 },
   "Goiânia":         { latitude: -16.6869, longitude: -49.2648, population: 1500000,  country: "BR", density: 1700 },
+  "Campinas":        { latitude: -22.9056, longitude: -47.0608, population: 3200000,  country: "BR", density: 3800 },
+  "São Luís":        { latitude:  -2.5387, longitude: -44.2825, population: 1400000,  country: "BR", density: 2000 },
+  "Maceió":          { latitude:  -9.6658, longitude: -35.7350, population: 1050000,  country: "BR", density: 3500 },
+  "Natal":           { latitude:  -5.7945, longitude: -35.2110, population: 1350000,  country: "BR", density: 4200 },
+  "Teresina":        { latitude:  -5.0920, longitude: -42.8038, population:  950000,  country: "BR", density: 1500 },
+  "Florianópolis":   { latitude: -27.5954, longitude: -48.5480, population:  550000,  country: "BR", density:  900 },
 
   "Nova York":       { latitude:  40.7128, longitude: -74.0060, population: 19000000, country: "US", density: 11000 },
   "Los Angeles":     { latitude:  34.0522, longitude: -118.2437,population: 13000000, country: "US", density: 3200 },
