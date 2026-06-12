@@ -114,6 +114,7 @@ export default function HomeScreen() {
   const [altitude, setAltitude] = useState(580); // metros — altura de Hiroshima
   const [timelineStep, setTimelineStep] = useState(-1);
   const [panelMinimized, setPanelMinimized] = useState(false);
+  const [selectedZone, setSelectedZone] = useState<string | null>(null);
 
   // guarda os timeouts pra limpar depois
   const timeoutIds = useRef<ReturnType<typeof setTimeout>[]>([]);
@@ -136,6 +137,7 @@ export default function HomeScreen() {
   const weaponSpin = useRef(new Animated.Value(0)).current;
   const weaponTilt = useRef(new Animated.Value(0)).current;
   const falloutAnim = useRef(new Animated.Value(0)).current;
+  const pulseAnim = useRef(new Animated.Value(0.4)).current;
 
   // pulse de alerta no header — guarda referência pra parar no unmount
   useEffect(() => {
@@ -155,6 +157,20 @@ export default function HomeScreen() {
   useEffect(() => {
     return () => clearAllTimeouts();
   }, []);
+
+  // pulse na barra de expandir quando o painel tá minimizado
+  useEffect(() => {
+    if (!panelMinimized) { pulseAnim.setValue(0.4); return; }
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, { toValue: 1, duration: 700, useNativeDriver: true }),
+        Animated.timing(pulseAnim, { toValue: 0.4, duration: 700, useNativeDriver: true }),
+      ])
+    );
+    loop.start();
+    return () => loop.stop();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [panelMinimized]);
 
   // animação 3D de rotação contínua quando modal de armas está aberto
   useEffect(() => {
@@ -284,6 +300,7 @@ export default function HomeScreen() {
       setBurstType(null);
       setTimelineStep(-1);
       setPanelMinimized(false);
+      setSelectedZone(null);
       setStats((s) => ({ ...s, destroyed: 0, severe: 0, light: 0, fallout: 0 }));
       fireballScale.setValue(0);
       shockwaveScale.setValue(0);
@@ -424,7 +441,7 @@ export default function HomeScreen() {
     schedule(() => setWave(2), 2450);
     schedule(() => setWave(3), 2700);
     schedule(() => setWave(4), 2950);
-    schedule(() => { setWave(5); setDetonated(true); }, 3200);
+    schedule(() => { setWave(5); setDetonated(true); setPanelMinimized(true); }, 3200);
 
     schedule(() => {
       setShowFallout(true);
@@ -548,17 +565,19 @@ export default function HomeScreen() {
         {/* Handle de minimizar (só aparece depois de detonar) */}
         {detonated && (
           <Pressable
-            style={s.minBar}
-            onPress={() => {
-              Haptics.selectionAsync();
-              setPanelMinimized((m) => !m);
-            }}
+            onPress={() => { Haptics.selectionAsync(); setPanelMinimized((m) => !m); }}
           >
-            <View style={s.minGrip} />
-            <Text style={s.minTxt}>
-              {panelMinimized ? "▲  TOQUE PARA EXPANDIR" : "▼  TOQUE PARA MINIMIZAR"}
-            </Text>
-            <View style={s.minGrip} />
+            {panelMinimized ? (
+              <Animated.View style={[s.pulseBar, { opacity: pulseAnim }]}>
+                <Text style={s.pulseBarText}>☢  VER RESULTADOS  ☢</Text>
+              </Animated.View>
+            ) : (
+              <View style={s.minBar}>
+                <View style={s.minGrip} />
+                <Text style={s.minTxt}>▼  MINIMIZAR</Text>
+                <View style={s.minGrip} />
+              </View>
+            )}
           </Pressable>
         )}
 
@@ -654,22 +673,37 @@ export default function HomeScreen() {
           </View>
         )}
 
-        {detonated && (
-          <View style={s.zonesRow}>
-            {[
-              { color: "#fff", label: "Bola de fogo" },
-              { color: "#ff2200", label: "Destruição total" },
-              { color: "#ff6600", label: "Dano moderado" },
-              { color: "#ffcc00", label: "Dano leve" },
-              { color: "#78ff78", label: "Nuvem radioativa" },
-            ].map((z) => (
-              <View key={z.label} style={s.zoneItem}>
-                <View style={[s.zoneDot, { backgroundColor: z.color }]} />
-                <Text style={s.zoneLabel}>{z.label}</Text>
+        {detonated && (() => {
+          const zones = [
+            { color: "#fff",    label: "Bola de fogo",    desc: "Temperatura acima de 100 milhões °C. Tudo é vaporizado instantaneamente. Sobrevivência impossível." },
+            { color: "#ff2200", label: "Destruição total", desc: "Onda de choque acima de 20 psi. Prédios de concreto são demolidos. Sobrevivência quase zero." },
+            { color: "#ff6600", label: "Dano moderado",    desc: "Onda de choque entre 5–20 psi. Prédios danificados, incêndios em massa. Ferimentos gravíssimos." },
+            { color: "#ffcc00", label: "Dano leve",        desc: "Onda de choque abaixo de 5 psi. Vidros quebrados, queimaduras de 2° grau. Ferimentos leves." },
+            { color: "#78ff78", label: "Nuvem radioativa", desc: "Contaminação por fallout radioativo. Dose potencialmente letal em horas ou dias." },
+          ];
+          const active = zones.find(z => z.label === selectedZone);
+          return (
+            <View style={{ gap: 6 }}>
+              <View style={s.zonesRow}>
+                {zones.map((z) => (
+                  <Pressable
+                    key={z.label}
+                    style={s.zoneItem}
+                    onPress={() => setSelectedZone(selectedZone === z.label ? null : z.label)}
+                  >
+                    <View style={[s.zoneDot, { backgroundColor: z.color, borderWidth: selectedZone === z.label ? 1.5 : 0, borderColor: z.color, opacity: selectedZone === z.label ? 1 : 0.7 }]} />
+                    <Text style={[s.zoneLabel, selectedZone === z.label && { color: z.color }]}>{z.label}</Text>
+                  </Pressable>
+                ))}
               </View>
-            ))}
-          </View>
-        )}
+              {active && (
+                <View style={[s.zoneDesc, { borderLeftColor: active.color }]}>
+                  <Text style={s.zoneDescText}>{active.desc}</Text>
+                </View>
+              )}
+            </View>
+          );
+        })()}
 
         </>
         )}
@@ -1030,10 +1064,24 @@ const s = StyleSheet.create({
   statVal: { color: "#fff", fontSize: 14, fontWeight: "900" },
   statLbl: { color: "#555", fontSize: 8, fontWeight: "700", letterSpacing: 1 },
 
-  zonesRow: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
-  zoneItem: { flexDirection: "row", alignItems: "center", gap: 5 },
-  zoneDot: { width: 8, height: 8, borderRadius: 4 },
+  zonesRow: { flexDirection: "row", flexWrap: "wrap", gap: 6 },
+  zonesCol: { gap: 2 },
+  zoneRow: {
+    flexDirection: "row", alignItems: "center", gap: 10,
+    paddingVertical: 10, paddingHorizontal: 10,
+    borderRadius: 8,
+  },
+  zoneItem: { flexDirection: "row", alignItems: "center", gap: 5, paddingVertical: 5, paddingHorizontal: 2 },
+  zoneDot: { width: 9, height: 9, borderRadius: 5 },
   zoneLabel: { color: "#666", fontSize: 10, fontWeight: "600" },
+  zoneDesc: {
+    marginTop: 2, marginBottom: 4, borderLeftWidth: 2,
+    paddingLeft: 12, paddingVertical: 8, marginHorizontal: 10,
+    backgroundColor: "rgba(255,255,255,0.03)",
+    borderRadius: 4,
+  },
+  zoneDescTitle: { fontSize: 11, fontWeight: "900", letterSpacing: 1, marginBottom: 3 },
+  zoneDescText: { color: "#aaa", fontSize: 11, lineHeight: 16 },
 
   // BURST TYPE SELECTOR
   burstRow: {
@@ -1090,13 +1138,24 @@ const s = StyleSheet.create({
   },
 
   // MINIMIZE BAR
+  pulseBar: {
+    alignItems: "center", justifyContent: "center",
+    paddingVertical: 10,
+    borderRadius: 10,
+    borderWidth: 1, borderColor: YELLOW,
+    backgroundColor: "rgba(255,210,0,0.08)",
+    shadowColor: YELLOW, shadowOpacity: 0.6, shadowRadius: 12,
+    marginBottom: 2,
+  },
+  pulseBarText: {
+    color: YELLOW, fontSize: 12, fontWeight: "900", letterSpacing: 3,
+  },
   minBar: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: 10,
-    paddingVertical: 4,
-    marginTop: -8,
+    paddingVertical: 6,
     marginBottom: 2,
   },
   minGrip: {
@@ -1104,7 +1163,7 @@ const s = StyleSheet.create({
     backgroundColor: "#333",
   },
   minTxt: {
-    color: "#666",
+    color: "#555",
     fontSize: 9,
     fontWeight: "900",
     letterSpacing: 2,
