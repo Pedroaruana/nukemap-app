@@ -639,6 +639,13 @@ export default function HomeScreen() {
           </Text>
         )}
 
+        {detonated && (
+          <Text style={s.survivorsInfo}>
+            🟢 Sobreviventes estimados:{" "}
+            {fmtFull(Math.max(0, stats.totalPop - stats.destroyed - stats.severe - stats.light - stats.fallout))} pessoas
+          </Text>
+        )}
+
         {/* COMPARAÇÕES INTUITIVAS */}
         {detonated && (
           <View style={s.compBox}>
@@ -1200,6 +1207,14 @@ const s = StyleSheet.create({
     color: "#aaa",
     fontSize: 11,
     fontWeight: "600",
+    textAlign: "center",
+    letterSpacing: 0.5,
+  },
+
+  survivorsInfo: {
+    color: "#78ff78",
+    fontSize: 11,
+    fontWeight: "700",
     textAlign: "center",
     letterSpacing: 0.5,
   },
