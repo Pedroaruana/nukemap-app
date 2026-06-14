@@ -60,6 +60,51 @@ function CountUp({ value, style }: { value: number; style?: object }) {
   );
 }
 
+// Gera coordenadas de círculo para KML (64 pontos)
+function circleKmlCoords(lat: number, lng: number, radiusM: number): string {
+  const pts: string[] = [];
+  const n = 64;
+  for (let i = 0; i <= n; i++) {
+    const a = (i / n) * 2 * Math.PI;
+    const dLat = (radiusM / 111320) * Math.sin(a);
+    const dLng = (radiusM / (111320 * Math.cos((lat * Math.PI) / 180))) * Math.cos(a);
+    pts.push(`${(lng + dLng).toFixed(6)},${(lat + dLat).toFixed(6)},0`);
+  }
+  return pts.join(" ");
+}
+
+function buildKML(
+  lat: number, lng: number, cityName: string,
+  fireball: number, heavy: number, moderate: number, light_zone: number, thermal: number,
+): string {
+  const zone = (name: string, color: string, radius: number) => `
+  <Placemark>
+    <name>${name}</name>
+    <Style>
+      <LineStyle><color>ff${color}</color><width>1.5</width></LineStyle>
+      <PolyStyle><color>55${color}</color></PolyStyle>
+    </Style>
+    <Polygon><outerBoundaryIs><LinearRing>
+      <coordinates>${circleKmlCoords(lat, lng, radius)}</coordinates>
+    </LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>`;
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document>
+  <name>NUKEMAP — ${cityName}</name>
+  ${zone("Radiação térmica", "0050ff", thermal)}
+  ${zone("Dano leve", "00ccff", light_zone)}
+  ${zone("Dano moderado", "0066ff", moderate)}
+  ${zone("Destruição total", "0022ff", heavy)}
+  ${zone("Bola de fogo", "ffffff", fireball)}
+  <Placemark><name>Epicentro — ${cityName}</name>
+    <Point><coordinates>${lng.toFixed(6)},${lat.toFixed(6)},0</coordinates></Point>
+  </Placemark>
+</Document>
+</kml>`;
+}
+
 // Gera polígono de fallout (forma de gota com vento)
 function falloutPolygon(
   center: { latitude: number; longitude: number },
@@ -712,6 +757,36 @@ export default function HomeScreen() {
           );
         })()}
 
+        {detonated && Platform.OS === "web" && (
+          <View style={s.webBtnsRow}>
+            <Pressable
+              style={s.kmlBtn}
+              onPress={() => {
+                const kml = buildKML(
+                  location.latitude, location.longitude,
+                  customTarget ? "Alvo personalizado" : city,
+                  fireball, heavy, moderate, light_zone, thermal,
+                );
+                const blob = new Blob([kml], { type: "application/vnd.google-earth.kml+xml" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "nukemap.kml";
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+            >
+              <Text style={s.kmlBtnText}>🌍  ABRIR NO GOOGLE EARTH  ↓</Text>
+            </Pressable>
+            <Pressable
+              style={s.kmlInfoBtn}
+              onPress={() => alert("Baixa um arquivo .kml com os raios da explosão. Abra no Google Earth (earth.google.com) para ver as zonas em tamanho real no mapa.")}
+            >
+              <Text style={s.kmlInfoText}>?</Text>
+            </Pressable>
+          </View>
+        )}
+
         </>
         )}
 
@@ -1217,6 +1292,41 @@ const s = StyleSheet.create({
     fontWeight: "700",
     textAlign: "center",
     letterSpacing: 0.5,
+  },
+
+  webBtnsRow: {
+    flexDirection: "row",
+    gap: 8,
+    marginTop: 4,
+  },
+  kmlBtn: {
+    flex: 1,
+    alignItems: "center",
+    paddingVertical: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#4af",
+    backgroundColor: "rgba(68,170,255,0.08)",
+  },
+  kmlBtnText: {
+    color: "#4af",
+    fontSize: 11,
+    fontWeight: "800",
+    letterSpacing: 1.5,
+  },
+  kmlInfoBtn: {
+    width: 36,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#4af",
+    backgroundColor: "rgba(68,170,255,0.08)",
+  },
+  kmlInfoText: {
+    color: "#4af",
+    fontSize: 15,
+    fontWeight: "800",
   },
 
   // COMPARAÇÕES
