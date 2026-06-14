@@ -156,6 +156,7 @@ export default function HomeScreen() {
   const [currentDensity, setCurrentDensity] = useState(7400);
   const [burstType, setBurstType] = useState<"air" | "ground" | null>(null);
   const [showBurstInfo, setShowBurstInfo] = useState(false);
+  const [showKmlInfo, setShowKmlInfo] = useState(false);
   const [altitude, setAltitude] = useState(580); // metros — altura de Hiroshima
   const [timelineStep, setTimelineStep] = useState(-1);
   const [panelMinimized, setPanelMinimized] = useState(false);
@@ -780,7 +781,7 @@ export default function HomeScreen() {
             </Pressable>
             <Pressable
               style={s.kmlInfoBtn}
-              onPress={() => alert("Baixa um arquivo .kml com os raios da explosão. Abra no Google Earth (earth.google.com) para ver as zonas em tamanho real no mapa.")}
+              onPress={() => setShowKmlInfo(true)}
             >
               <Text style={s.kmlInfoText}>?</Text>
             </Pressable>
@@ -934,6 +935,29 @@ export default function HomeScreen() {
       </Modal>
 
       {/* MODAL — TIPO DE EXPLOSÃO */}
+      <Modal visible={showKmlInfo} transparent animationType="fade">
+        <Pressable style={s.modal} onPress={() => setShowKmlInfo(false)}>
+          <View style={s.infoBox}>
+            <Text style={s.infoTitle}>GOOGLE EARTH</Text>
+            <View style={s.infoSection}>
+              <Text style={[s.infoHead, { color: "#4af" }]}>🌍  O que é esse arquivo?</Text>
+              <Text style={s.infoBody}>
+                Baixa um arquivo <Text style={{ color: "#fff" }}>.kml</Text> com os raios de destruição desta simulação em escala real.
+                {"\n\n"}
+                • Abra em <Text style={{ color: "#4af" }}>earth.google.com</Text> (Google Earth na web) ou no app Google Earth
+                {"\n"}
+                • As zonas aparecem sobrepostas no mapa satélite em tamanho real
+                {"\n"}
+                • Dá pra ver exatamente quais bairros, ruas e pontos estariam dentro de cada zona
+              </Text>
+            </View>
+            <Pressable style={s.modalClose} onPress={() => setShowKmlInfo(false)}>
+              <Text style={s.modalCloseText}>ENTENDI</Text>
+            </Pressable>
+          </View>
+        </Pressable>
+      </Modal>
+
       <Modal visible={showBurstInfo} transparent animationType="fade">
         <Pressable style={s.modal} onPress={() => setShowBurstInfo(false)}>
           <View style={s.infoBox}>
