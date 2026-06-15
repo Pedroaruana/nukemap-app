@@ -102,3 +102,9 @@ Esse app é só pra fins educacionais e entretenimento. Os cálculos são aproxi
 ---
 
 Feito por **Pedro Aruana** — [github.com/Pedroaruana](https://github.com/Pedroaruana)
+
+---
+
+## License
+
+MIT
