@@ -105,6 +105,6 @@ Feito por **Pedro Aruana** — [github.com/Pedroaruana](https://github.com/Pedro
 
 ---
 
-## License
+## Licença
 
-MIT
+MIT © Pedro Aruana
