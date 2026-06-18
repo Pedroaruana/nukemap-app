@@ -157,6 +157,7 @@ export default function HomeScreen() {
   const [burstType, setBurstType] = useState<"air" | "ground" | null>(null);
   const [showBurstInfo, setShowBurstInfo] = useState(false);
   const [showKmlInfo, setShowKmlInfo] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [altitude, setAltitude] = useState(580); // metros — altura de Hiroshima
   const [timelineStep, setTimelineStep] = useState(-1);
   const [panelMinimized, setPanelMinimized] = useState(false);
@@ -794,6 +795,24 @@ export default function HomeScreen() {
           );
         })()}
 
+        {detonated && Platform.OS === "web" && !customTarget && (
+          <Pressable
+            style={[s.shareBtn, copied && s.shareBtnCopied]}
+            onPress={() => {
+              const weaponIdx = WEAPONS.findIndex(w => w.name === weapon.name);
+              const base = window.location.origin + window.location.pathname;
+              const url = `${base}?c=${encodeURIComponent(city)}&w=${weaponIdx}&b=${burstType}&det=1`;
+              navigator.clipboard.writeText(url);
+              setCopied(true);
+              setTimeout(() => setCopied(false), 2500);
+            }}
+          >
+            <Text style={[s.shareBtnText, copied && { color: "#78ff78" }]}>
+              {copied ? "✓  LINK COPIADO!" : "🔗  COMPARTILHAR SIMULAÇÃO"}
+            </Text>
+          </Pressable>
+        )}
+
         {detonated && Platform.OS === "web" && (
           <View style={s.webBtnsRow}>
             <Pressable
@@ -1353,6 +1372,17 @@ const s = StyleSheet.create({
     textAlign: "center",
     letterSpacing: 0.5,
   },
+
+  shareBtn: {
+    alignItems: "center", paddingVertical: 11, borderRadius: 8,
+    borderWidth: 1, borderColor: "#888",
+    backgroundColor: "rgba(255,255,255,0.04)",
+  },
+  shareBtnCopied: {
+    borderColor: "#78ff78",
+    backgroundColor: "rgba(120,255,120,0.06)",
+  },
+  shareBtnText: { color: "#aaa", fontSize: 12, fontWeight: "800", letterSpacing: 1.5 },
 
   webBtnsRow: {
     flexDirection: "row",
