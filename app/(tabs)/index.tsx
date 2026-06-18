@@ -204,6 +204,33 @@ export default function HomeScreen() {
     return () => clearAllTimeouts();
   }, []);
 
+  // restaura simulação a partir dos parâmetros da URL (web only)
+  const autoDetonateRef = useRef(false);
+  useEffect(() => {
+    if (Platform.OS !== "web") return;
+    const params = new URLSearchParams(window.location.search);
+    const c = params.get("c");
+    const w = params.get("w");
+    const b = params.get("b");
+    const det = params.get("det");
+
+    if (c && CITIES[c]) {
+      const data = CITIES[c];
+      setCity(c);
+      setLocation({ latitude: data.latitude, longitude: data.longitude });
+      setCurrentDensity(data.density);
+      setStats({ totalPop: data.population, destroyed: 0, severe: 0, light: 0, fallout: 0 });
+      setTimeout(() => mapRef.current?.flyTo(data.latitude, data.longitude, 0.15), 600);
+    }
+    if (w !== null) {
+      const idx = parseInt(w, 10);
+      if (!isNaN(idx) && WEAPONS[idx]) setWeapon(WEAPONS[idx]);
+    }
+    if (b === "air" || b === "ground") setBurstType(b);
+    if (det === "1") autoDetonateRef.current = true;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // pulse na barra de expandir quando o painel tá minimizado
   useEffect(() => {
     if (!panelMinimized) { pulseAnim.setValue(0.4); return; }
@@ -244,6 +271,15 @@ export default function HomeScreen() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showWeapons]);
+
+  // auto-detona se o link compartilhado incluía det=1
+  useEffect(() => {
+    if (!autoDetonateRef.current || burstType === null) return;
+    autoDetonateRef.current = false;
+    const id = setTimeout(() => triggerDetonation(), 1800);
+    return () => clearTimeout(id);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [burstType]);
 
   const kt = weapon.kt;
 
