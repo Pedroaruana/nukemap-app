@@ -26,6 +26,7 @@ export interface NukeMapProps {
 
 // Converte deltaDeg (graus de latitude) num zoom level aproximado do Leaflet
 function deltaToZoom(delta: number) {
+  if (!isFinite(delta) || delta <= 0) return 12;
   // 0.15° ≈ zoom 12; 1° ≈ zoom 9; 10° ≈ zoom 5
   const z = Math.round(Math.log2(360 / delta));
   return Math.max(3, Math.min(18, z));
@@ -56,7 +57,13 @@ function MapClickHandler({ onPress }: { onPress?: (lat: number, lng: number) => 
 function MapController({ flyToCmd }: { flyToCmd: React.MutableRefObject<((lat: number, lng: number, delta: number) => void) | null> }) {
   const map = useMap();
   flyToCmd.current = (lat, lng, delta) => {
-    map.flyTo([lat, lng], deltaToZoom(delta), { duration: 0.9 });
+    if (!isFinite(lat) || !isFinite(lng)) return;
+    // try/catch pq o leaflet explode se o mapa ainda nao tiver tamanho medido
+    try {
+      map.flyTo([lat, lng], deltaToZoom(delta), { duration: 0.9 });
+    } catch {
+      try { map.setView([lat, lng], deltaToZoom(delta)); } catch {}
+    }
   };
   return null;
 }
