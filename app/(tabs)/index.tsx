@@ -19,6 +19,7 @@ import {
   View,
 } from "react-native";
 import Bomb3D from "../../components/Bomb3D";
+import Explosion3D from "../../components/Explosion3D";
 import NukeMap, { NukeMapRef } from "../../components/NukeMap";
 import { CITIES, DEFAULT_DENSITY } from "../../data/cities";
 import { WEAPONS } from "../../data/weapons";
@@ -161,6 +162,7 @@ export default function HomeScreen() {
   const [altitude, setAltitude] = useState(580); // metros — altura de Hiroshima
   const [timelineStep, setTimelineStep] = useState(-1);
   const [panelMinimized, setPanelMinimized] = useState(false);
+  const [exploding, setExploding] = useState(false);
   const [selectedZone, setSelectedZone] = useState<string | null>(null);
 
   // guarda os timeouts pra limpar depois
@@ -389,6 +391,7 @@ export default function HomeScreen() {
       shockwaveScale.setValue(0);
       shockwaveOpacity.setValue(0);
       falloutAnim.setValue(0);
+      setExploding(false);
       return;
     }
     if (!burstType) {
@@ -473,6 +476,9 @@ export default function HomeScreen() {
     const delta = Math.max(0.05, maxRadius / 111000); // metros → graus aprox
     mapRef.current?.flyTo(location.latitude, location.longitude, delta);
 
+    // esconde o painel durante toda a animação
+    setExploding(true);
+
     // ÁUDIO: sirene primeiro, depois boom + rumble
     playSiren();
     schedule(() => playBoom(), 2200);
@@ -483,55 +489,47 @@ export default function HomeScreen() {
     schedule(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium), 3000);
     schedule(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium), 3500);
 
-    // TIMELINE
-    timeline.forEach((_, i) => schedule(() => setTimelineStep(i), 2200 + i * 900));
-
-    // FLASH ofuscante (depois da sirene)
+    // FLASH branco forte (depois da sirene)
     schedule(() => {
       Animated.sequence([
-        Animated.timing(flashAnim, { toValue: 1, duration: 60, useNativeDriver: true }),
-        Animated.timing(flashAnim, { toValue: 0.4, duration: 200, useNativeDriver: true }),
-        Animated.timing(flashAnim, { toValue: 0, duration: 700, useNativeDriver: true }),
-      ]).start();
-
-      Animated.sequence([
-        Animated.timing(shakeAnim, { toValue: 14, duration: 50, useNativeDriver: true }),
-        Animated.timing(shakeAnim, { toValue: -14, duration: 50, useNativeDriver: true }),
-        Animated.timing(shakeAnim, { toValue: 10, duration: 50, useNativeDriver: true }),
-        Animated.timing(shakeAnim, { toValue: -10, duration: 50, useNativeDriver: true }),
-        Animated.timing(shakeAnim, { toValue: 6, duration: 50, useNativeDriver: true }),
-        Animated.timing(shakeAnim, { toValue: -3, duration: 50, useNativeDriver: true }),
-        Animated.timing(shakeAnim, { toValue: 0, duration: 50, useNativeDriver: true }),
-      ]).start();
-
-      Animated.sequence([
-        Animated.timing(fireballScale, { toValue: 1, duration: 300, easing: Easing.out(Easing.exp), useNativeDriver: true }),
-        Animated.timing(fireballScale, { toValue: 1.2, duration: 800, useNativeDriver: true }),
+        Animated.timing(flashAnim, { toValue: 1, duration: 50, useNativeDriver: true }),
+        Animated.timing(flashAnim, { toValue: 1, duration: 350, useNativeDriver: true }),
+        Animated.timing(flashAnim, { toValue: 0.5, duration: 300, useNativeDriver: true }),
+        Animated.timing(flashAnim, { toValue: 0, duration: 900, useNativeDriver: true }),
       ]).start();
     }, 2200);
 
-    // SHOCKWAVE
-    Animated.parallel([
-      Animated.timing(shockwaveScale, { toValue: 1, duration: 1400, easing: Easing.out(Easing.quad), useNativeDriver: true }),
+    // TREMIDA forte da tela
+    schedule(() => {
       Animated.sequence([
-        Animated.timing(shockwaveOpacity, { toValue: 0.7, duration: 200, useNativeDriver: true }),
-        Animated.timing(shockwaveOpacity, { toValue: 0, duration: 1200, useNativeDriver: true }),
-      ]),
-    ]).start();
+        Animated.timing(shakeAnim, { toValue: 22, duration: 45, useNativeDriver: true }),
+        Animated.timing(shakeAnim, { toValue: -22, duration: 45, useNativeDriver: true }),
+        Animated.timing(shakeAnim, { toValue: 16, duration: 50, useNativeDriver: true }),
+        Animated.timing(shakeAnim, { toValue: -16, duration: 50, useNativeDriver: true }),
+        Animated.timing(shakeAnim, { toValue: 10, duration: 55, useNativeDriver: true }),
+        Animated.timing(shakeAnim, { toValue: -10, duration: 55, useNativeDriver: true }),
+        Animated.timing(shakeAnim, { toValue: 6, duration: 60, useNativeDriver: true }),
+        Animated.timing(shakeAnim, { toValue: -3, duration: 60, useNativeDriver: true }),
+        Animated.timing(shakeAnim, { toValue: 0, duration: 60, useNativeDriver: true }),
+      ]).start();
+    }, 2550);
 
-    // Sequência de ondas (depois da sirene)
-    schedule(() => setWave(1), 2200);
-    schedule(() => setWave(2), 2450);
-    schedule(() => setWave(3), 2700);
-    schedule(() => setWave(4), 2950);
-    schedule(() => { setWave(5); setDetonated(true); setPanelMinimized(true); }, 3200);
+    // raios de dano aparecem depois que o cogumelo some
+    schedule(() => setWave(1), 6100);
+    schedule(() => setWave(2), 6250);
+    schedule(() => setWave(3), 6400);
+    schedule(() => setWave(4), 6550);
+    schedule(() => { setWave(5); setDetonated(true); setPanelMinimized(true); setExploding(false); }, 6700);
+
+    // TIMELINE (roda quando o painel volta)
+    timeline.forEach((_, i) => schedule(() => setTimelineStep(i), 6700 + i * 700));
 
     schedule(() => {
       setShowFallout(true);
       Animated.timing(falloutAnim, {
         toValue: 1, duration: 4000, easing: Easing.out(Easing.quad), useNativeDriver: false,
       }).start();
-    }, 4200);
+    }, 7400);
   }
 
   const cityKeys = useMemo(
@@ -588,7 +586,7 @@ export default function HomeScreen() {
           initialLng={location.longitude}
           location={location}
           onPress={handleMapPress}
-          showCrosshair={!detonated && wave === 0}
+          showCrosshair={!detonated && !exploding && wave === 0}
           wave={wave}
           fireball={fireball}
           heavy={heavy}
@@ -602,6 +600,9 @@ export default function HomeScreen() {
           falloutPoly={falloutPoly}
         />
       </Animated.View>
+
+      {/* EXPLOSÃO — cogumelo em canvas (web) */}
+      <Explosion3D active={exploding} delayMs={2200} />
 
       {/* FLASH NUCLEAR */}
       <Animated.View pointerEvents="none" style={[s.flash, { opacity: flashAnim }]} />
@@ -643,7 +644,8 @@ export default function HomeScreen() {
         </Pressable>
       </View>
 
-      {/* PAINEL INFERIOR */}
+      {/* PAINEL INFERIOR (some durante a explosão) */}
+      {!exploding && (
       <View style={s.panel}>
         {/* Handle de minimizar (só aparece depois de detonar) */}
         {detonated && (
@@ -953,6 +955,7 @@ export default function HomeScreen() {
           💡 Toque em qualquer ponto do mapa para definir alvo personalizado
         </Text>
       </View>
+      )}
 
       {/* MODAL — CIDADES */}
       <Modal visible={showCities} transparent animationType="slide">
